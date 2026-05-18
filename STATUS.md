@@ -1,5 +1,7 @@
 # STATUS
 
+Commit inicial: 10397ff
+
 ## F0-002 [FE] Inicializar repo chocobo-frontend
 
 Status: implementado localmente.
