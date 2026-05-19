@@ -141,19 +141,24 @@ export const routes: Routes = [
     data: { config: workspaceConfigs['cash'] }
   },
 
-  // Retaguarda - workspace generico
-  {
-    path: 'financeiro',
-    canActivate: [authGuard, storeGuard],
-    loadComponent: () => import('./features/workspace/workspace.page').then((m) => m.WorkspacePage),
-    data: { config: workspaceConfigs['finance'] }
-  },
+  // Financeiro
+  { path: 'financeiro', redirectTo: 'financeiro/contas-receber', pathMatch: 'full' },
+  { path: 'financeiro/contas-receber', canActivate: [authGuard, storeGuard],
+    loadComponent: () => import('./features/financeiro/contas-receber.page').then(m => m.ContasReceberPage) },
+  { path: 'financeiro/contas-pagar', canActivate: [authGuard, storeGuard],
+    loadComponent: () => import('./features/financeiro/contas-pagar.page').then(m => m.ContasPagarPage) },
+  { path: 'financeiro/inadimplencia', canActivate: [authGuard, storeGuard],
+    loadComponent: () => import('./features/financeiro/inadimplencia.page').then(m => m.InadimplenciaPage) },
+
+  // Compras (placeholder mantido temporariamente)
   {
     path: 'compras',
     canActivate: [authGuard, storeGuard],
     loadComponent: () => import('./features/workspace/workspace.page').then((m) => m.WorkspacePage),
     data: { config: workspaceConfigs['purchases'] }
   },
+
+  // Fiscal (placeholder mantido temporariamente)
   {
     path: 'fiscal',
     canActivate: [authGuard, storeGuard],

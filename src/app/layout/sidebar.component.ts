@@ -57,11 +57,23 @@ const navGroups: NavGroup[] = [
     ]
   },
   {
-    label: 'Retaguarda',
+    label: 'Financeiro',
     items: [
-      { label: 'Financeiro', route: '/financeiro', icon: 'pi pi-dollar' },
-      { label: 'Compras', route: '/compras', icon: 'pi pi-shopping-cart' },
-      { label: 'Fiscal', route: '/fiscal', icon: 'pi pi-file' }
+      { label: 'Contas a Receber', route: '/financeiro/contas-receber', icon: 'pi pi-arrow-down-right' },
+      { label: 'Contas a Pagar', route: '/financeiro/contas-pagar', icon: 'pi pi-arrow-up-right' },
+      { label: 'Inadimplência', route: '/financeiro/inadimplencia', icon: 'pi pi-exclamation-circle' }
+    ]
+  },
+  {
+    label: 'Compras',
+    items: [
+      { label: 'Compras', route: '/compras', icon: 'pi pi-shopping-cart' }
+    ]
+  },
+  {
+    label: 'Fiscal',
+    items: [
+      { label: 'Documentos', route: '/fiscal', icon: 'pi pi-file' }
     ]
   }
 ];

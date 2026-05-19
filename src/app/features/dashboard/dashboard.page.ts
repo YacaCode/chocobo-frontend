@@ -98,14 +98,6 @@ function formatBRL(value: number): string {
           <div echarts [options]="vendasChartOptions()" class="chart"></div>
         </article>
 
-        <article class="panel">
-          <div class="panel__title">
-            <p>Pagamentos</p>
-            <h3>Distribuicao por forma</h3>
-          </div>
-          <div echarts [options]="pagamentosChartOptions()" class="chart"></div>
-        </article>
-
         <article class="panel panel--wide">
           <div class="panel__title">
             <p>Atalhos</p>
@@ -429,35 +421,6 @@ export class DashboardPage implements OnInit {
         barMaxWidth: 34,
         data: valores,
         itemStyle: { borderRadius: [4, 4, 0, 0] }
-      }]
-    };
-  });
-
-  readonly pagamentosChartOptions = computed<EChartsOption>(() => {
-    const total = this.data()?.vendasHoje ?? 9884;
-    return {
-      color: ['#F9A825', '#00897B', '#1A237E', '#60a5fa'],
-      tooltip: {
-        trigger: 'item',
-        valueFormatter: (value: unknown) => formatBRL(Number(value ?? 0))
-      },
-      legend: {
-        bottom: 0,
-        left: 'center'
-      },
-      series: [{
-        name: 'Forma de pagamento',
-        type: 'pie',
-        radius: ['46%', '68%'],
-        center: ['50%', '44%'],
-        avoidLabelOverlap: true,
-        label: { formatter: '{b}' },
-        data: [
-          { name: 'Dinheiro', value: Math.round(total * 0.19) },
-          { name: 'Pix', value: Math.round(total * 0.32) },
-          { name: 'Debito', value: Math.round(total * 0.22) },
-          { name: 'Credito', value: Math.round(total * 0.27) }
-        ]
       }]
     };
   });

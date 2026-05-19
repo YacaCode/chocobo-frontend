@@ -31,9 +31,10 @@ import { TopbarComponent } from './layout/topbar.component';
     .app-shell {
       display: grid;
       min-height: 100vh;
+      height: 100vh;
       grid-template-columns: 15.5rem minmax(0, 1fr);
       background: transparent;
-      overflow-x: hidden;
+      overflow: hidden;
     }
 
     chb-sidebar,
@@ -45,8 +46,11 @@ import { TopbarComponent } from './layout/topbar.component';
     .app-shell__main {
       display: flex;
       min-width: 0;
-      min-height: 100vh;
+      min-height: 0;
+      height: 100vh;
       flex-direction: column;
+      overflow-y: auto;
+      overscroll-behavior: contain;
     }
 
     .app-shell__content {
@@ -69,6 +73,13 @@ import { TopbarComponent } from './layout/topbar.component';
     @media (max-width: 1024px) {
       .app-shell {
         grid-template-columns: 1fr;
+        height: auto;
+        overflow: visible;
+      }
+
+      .app-shell__main {
+        height: auto;
+        overflow: visible;
       }
     }
 

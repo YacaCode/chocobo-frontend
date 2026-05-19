@@ -10,6 +10,7 @@ export class ThemeService {
   private readonly systemPreference = window.matchMedia?.('(prefers-color-scheme: dark)') ?? null;
   private currentTheme: ThemePreference = this.readSavedTheme();
   private readonly darkModeSignal = signal(this.resolveTheme(this.currentTheme) === 'dark');
+  private themeTransitionTimer?: number;
 
   readonly darkMode = this.darkModeSignal.asReadonly();
 
@@ -18,7 +19,7 @@ export class ThemeService {
 
     this.systemPreference?.addEventListener('change', (event) => {
       if (this.currentTheme === 'auto') {
-        this.applyResolvedTheme(event.matches ? 'dark' : 'light');
+        this.applyResolvedTheme(event.matches ? 'dark' : 'light', true);
       }
     });
   }
@@ -33,18 +34,30 @@ export class ThemeService {
 
   private applyTheme(theme: ThemePreference, persist: boolean): void {
     this.currentTheme = theme;
-    this.applyResolvedTheme(this.resolveTheme(theme));
+    this.applyResolvedTheme(this.resolveTheme(theme), persist);
     if (persist) {
       localStorage.setItem(this.storageKey, theme);
     }
   }
 
-  private applyResolvedTheme(effective: 'light' | 'dark'): void {
+  private applyResolvedTheme(effective: 'light' | 'dark', animate: boolean): void {
+    const root = this.document.documentElement;
+    if (animate) {
+      root.classList.add('theme-transition');
+      if (this.themeTransitionTimer) {
+        window.clearTimeout(this.themeTransitionTimer);
+      }
+      this.themeTransitionTimer = window.setTimeout(() => {
+        root.classList.remove('theme-transition');
+      }, 220);
+    } else {
+      root.classList.remove('theme-transition');
+    }
     const enabled = effective === 'dark';
     this.darkModeSignal.set(enabled);
-    this.document.documentElement.classList.toggle('dark', enabled);
-    this.document.documentElement.setAttribute('data-theme', effective);
-    this.document.documentElement.style.colorScheme = effective;
+    root.classList.toggle('dark', enabled);
+    root.setAttribute('data-theme', effective);
+    root.style.colorScheme = effective;
   }
 
   private resolveTheme(theme: ThemePreference): 'light' | 'dark' {

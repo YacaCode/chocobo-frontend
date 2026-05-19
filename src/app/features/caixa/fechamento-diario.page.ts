@@ -1,7 +1,9 @@
 import { CurrencyPipe, DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, type OnDestroy, type OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, type OnDestroy, type OnInit, computed, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import type { EChartsOption } from 'echarts';
+import { NgxEchartsDirective } from 'ngx-echarts';
 import { Subject, catchError, finalize, of, takeUntil } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
 import { SkeletonModule } from 'primeng/skeleton';
@@ -47,10 +49,26 @@ const DEMO_FECHAMENTO: FechamentoDiario = {
   ]
 };
 
+const PAGAMENTO_COLORS = ['#F9A825', '#00897B', '#1A237E', '#60a5fa'];
+
+function formatBRL(value: number): string {
+  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+}
+
+function normalizeForma(forma: string): string {
+  const raw = forma.trim();
+  const lower = raw.toLowerCase();
+  if (lower.includes('debito')) return 'Debito';
+  if (lower.includes('credito')) return 'Credito';
+  if (lower.includes('pix')) return 'Pix';
+  if (lower.includes('dinheiro')) return 'Dinheiro';
+  return raw;
+}
+
 @Component({
   selector: 'chb-fechamento-diario-page',
   standalone: true,
-  imports: [ButtonModule, CurrencyPipe, DatePipe, SkeletonModule, TableModule, TagModule, ToastModule],
+  imports: [ButtonModule, CurrencyPipe, DatePipe, NgxEchartsDirective, SkeletonModule, TableModule, TagModule, ToastModule],
   providers: [MessageService],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -64,7 +82,17 @@ const DEMO_FECHAMENTO: FechamentoDiario = {
           <span>Resumo operacional consolidado da loja ativa.</span>
         </div>
         <div class="fechamento-actions">
-          <button pButton type="button" icon="pi pi-refresh" label="Atualizar" class="p-button-outlined" [loading]="loading()" (click)="carregar()"></button>
+          <button
+            pButton
+            type="button"
+            icon="pi pi-refresh"
+            label="Atualizar"
+            class="p-button-outlined chb-refresh-button"
+            [class.is-loading]="loading()"
+            [disabled]="loading()"
+            [attr.aria-busy]="loading()"
+            (click)="carregar()">
+          </button>
           <button pButton type="button" icon="pi pi-print" label="Imprimir fechamento" (click)="imprimir()"></button>
         </div>
       </header>
@@ -122,6 +150,8 @@ const DEMO_FECHAMENTO: FechamentoDiario = {
               <p>Recebimentos</p>
               <h3>Total por forma de pagamento</h3>
             </div>
+
+            <div echarts [options]="pagamentosChartOptions()" class="chart"></div>
 
             <p-table [value]="dados.formasPagamento" styleClass="chb-data-table" responsiveLayout="scroll">
               <ng-template pTemplate="header">
@@ -215,6 +245,7 @@ const DEMO_FECHAMENTO: FechamentoDiario = {
     }
     .kpi--danger strong { color: var(--chb-red); }
     .panel { display: grid; gap: 0.75rem; }
+    .chart { width: 100%; min-height: 15rem; }
     .saldo-panel {
       display: grid;
       justify-items: end;
@@ -222,6 +253,12 @@ const DEMO_FECHAMENTO: FechamentoDiario = {
     }
     .saldo-panel strong { color: var(--chb-teal); font-size: 1.7rem; }
     .saldo-panel small { color: var(--chb-text-muted); }
+    .chb-refresh-button .pi-refresh { display: inline-block; }
+    .chb-refresh-button.is-loading .pi-refresh { animation: chb-spin 0.9s linear infinite; }
+
+    @keyframes chb-spin {
+      to { transform: rotate(360deg); }
+    }
 
     @media (max-width: 900px) {
       .fechamento-meta,
@@ -260,6 +297,51 @@ export class FechamentoDiarioPage implements OnInit, OnDestroy {
 
   readonly resumo = signal<FechamentoDiario | null>(null);
   readonly loading = signal(false);
+  readonly pagamentosChartOptions = computed<EChartsOption>(() => {
+    const formas = this.resumo()?.formasPagamento ?? [];
+    const acumulado = new Map<string, number>();
+    formas.forEach((forma) => {
+      const nome = normalizeForma(forma.forma);
+      const total = Number(forma.total ?? 0);
+      acumulado.set(nome, (acumulado.get(nome) ?? 0) + total);
+    });
+    const data = Array.from(acumulado.entries())
+      .map(([name, value]) => ({ name, value }))
+      .sort((a, b) => {
+        const ordem = ['Dinheiro', 'Pix', 'Debito', 'Credito'];
+        return (ordem.indexOf(a.name) === -1 ? 99 : ordem.indexOf(a.name))
+          - (ordem.indexOf(b.name) === -1 ? 99 : ordem.indexOf(b.name));
+      });
+    const seriesData = data.length
+      ? data
+      : [
+          { name: 'Dinheiro', value: 0 },
+          { name: 'Pix', value: 0 },
+          { name: 'Debito', value: 0 },
+          { name: 'Credito', value: 0 }
+        ];
+
+    return {
+      color: PAGAMENTO_COLORS,
+      tooltip: {
+        trigger: 'item',
+        valueFormatter: (value: unknown) => formatBRL(Number(value ?? 0))
+      },
+      legend: {
+        bottom: 0,
+        left: 'center'
+      },
+      series: [{
+        name: 'Forma de pagamento',
+        type: 'pie',
+        radius: ['46%', '68%'],
+        center: ['50%', '44%'],
+        avoidLabelOverlap: true,
+        label: { formatter: '{b}' },
+        data: seriesData
+      }]
+    };
+  });
 
   ngOnInit(): void {
     this.carregar();

@@ -347,7 +347,60 @@ textarea.p-inputtext,
 }
 
 .p-tabview .p-tabview-nav li .p-tabview-nav-link {
+  position: relative;
   padding: 0.8rem 1rem;
+  border: 1px solid transparent;
+  border-radius: 0.6rem;
+  font-weight: 650;
+  color: var(--chb-text);
+  background: transparent;
+  transition:
+    transform 160ms ease,
+    color 160ms ease,
+    background-color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.p-tabview .p-tabview-nav {
+  gap: 0.35rem;
+  padding: 0.4rem 0.35rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--chb-border) 72%, transparent);
+}
+
+.p-tabview .p-tabview-nav li .p-tabview-nav-link::after {
+  content: '';
+  position: absolute;
+  left: 0.9rem;
+  right: 0.9rem;
+  bottom: 0.35rem;
+  height: 2px;
+  border-radius: 999px;
+  background: var(--chb-teal);
+  transform: scaleX(0);
+  transform-origin: left;
+  opacity: 0;
+  transition: transform 200ms ease, opacity 200ms ease;
+}
+
+.p-tabview .p-tabview-nav li .p-tabview-nav-link:hover {
+  background: color-mix(in srgb, var(--chb-surface) 78%, var(--chb-teal-50));
+  border-color: color-mix(in srgb, var(--chb-teal) 28%, var(--chb-border));
+  transform: translateY(-1px);
+}
+
+.p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link {
+  font-weight: 800;
+  color: var(--chb-teal);
+  background: color-mix(in srgb, var(--chb-teal-50) 70%, var(--chb-surface));
+  border-color: color-mix(in srgb, var(--chb-teal) 45%, var(--chb-border));
+  box-shadow: 0 8px 16px rgba(15, 118, 110, 0.12);
+  transform: translateY(-1px);
+}
+
+.p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link::after {
+  transform: scaleX(1);
+  opacity: 1;
 }
 
 .p-dialog {

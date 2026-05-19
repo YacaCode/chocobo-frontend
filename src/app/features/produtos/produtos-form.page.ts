@@ -3,6 +3,7 @@ import {
   Component,
   type OnDestroy,
   type OnInit,
+  computed,
   inject,
   signal
 } from '@angular/core';
@@ -21,15 +22,24 @@ import { SelectButtonModule } from 'primeng/selectbutton';
 import { TableModule } from 'primeng/table';
 import { TabViewModule } from 'primeng/tabview';
 
+import { ProdutoBuscaDialogComponent } from '../../shared/produto-busca-dialog/produto-busca-dialog.component';
+import type { ProdutoItem } from '../../shared/produto-busca-dialog/produto-busca-dialog.component';
+
 @Component({
   selector: 'chb-produtos-form',
   standalone: true,
   imports: [
     ButtonModule, CheckboxModule, CurrencyPipe, DropdownModule, FileUploadModule, FormsModule,
-    InputNumberModule, InputTextModule, ReactiveFormsModule, SelectButtonModule, TableModule, TabViewModule
+    InputNumberModule, InputTextModule, ReactiveFormsModule, SelectButtonModule, TableModule, TabViewModule,
+    ProdutoBuscaDialogComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
+    <chb-produto-busca-dialog
+      [(visible)]="showKitDialog"
+      (produtoSelecionado)="onKitProdutoSelecionado($event)">
+    </chb-produto-busca-dialog>
+
     <section class="form-page">
       <header class="form-header">
         <div>
@@ -105,16 +115,6 @@ import { TabViewModule } from 'primeng/tabview';
                   <p-dropdown
                     formControlName="unidade"
                     [options]="unidadeOptions"
-                    optionLabel="label"
-                    optionValue="value"
-                    class="w-full">
-                  </p-dropdown>
-                </label>
-                <label class="field">
-                  <span>Tipo</span>
-                  <p-dropdown
-                    formControlName="tipo"
-                    [options]="tipoOptions"
                     optionLabel="label"
                     optionValue="value"
                     class="w-full">
@@ -355,7 +355,7 @@ import { TabViewModule } from 'primeng/tabview';
               } @else {
                 <div class="socios-toolbar">
                   <h4 class="section-title">Produtos do Kit</h4>
-                  <button pButton type="button" icon="pi pi-plus" label="Adicionar Produto" class="p-button-sm p-button-outlined" (click)="adicionarItemKit()"></button>
+                  <button pButton type="button" icon="pi pi-plus" label="Adicionar Produto" class="p-button-sm p-button-outlined" (click)="abrirBuscaKit()"></button>
                 </div>
                 @if (kitItens().length === 0) {
                   <div class="empty-state-inline">
@@ -365,18 +365,45 @@ import { TabViewModule } from 'primeng/tabview';
                 } @else {
                   <p-table [value]="kitItens()" styleClass="p-datatable-sm">
                     <ng-template pTemplate="header">
-                      <tr><th>Código</th><th>Descrição</th><th style="width:120px">Quantidade</th><th style="width:60px"></th></tr>
+                      <tr>
+                        <th style="width:120px">Código</th>
+                        <th>Descrição</th>
+                        <th style="width:140px">Quantidade</th>
+                        <th style="width:120px;text-align:right">Preço</th>
+                        <th style="width:130px;text-align:right">Subtotal</th>
+                        <th style="width:84px"></th>
+                      </tr>
                     </ng-template>
                     <ng-template pTemplate="body" let-item let-i="rowIndex">
                       <tr>
                         <td>{{ item.codigo }}</td>
                         <td>{{ item.descricao }}</td>
-                        <td><p-inputNumber [(ngModel)]="item.quantidade" [ngModelOptions]="{standalone:true}" [min]="1" [showButtons]="true" [style]="{width:'100px'}"></p-inputNumber></td>
-                        <td><button pButton type="button" icon="pi pi-trash" class="p-button-text p-button-sm p-button-danger" (click)="removerItemKit(i)" aria-label="Remover"></button></td>
+                        <td>
+                          <p-inputNumber
+                            [(ngModel)]="item.quantidade"
+                            [ngModelOptions]="{standalone:true}"
+                            [min]="1"
+                            [showButtons]="true"
+                            decrementButtonClass="p-button-outlined"
+                            incrementButtonClass="p-button-outlined"
+                            [style]="{width:'120px'}">
+                          </p-inputNumber>
+                        </td>
+                        <td style="text-align:right">{{ item.precoVenda | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</td>
+                        <td style="text-align:right">{{ item.precoVenda * item.quantidade | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</td>
+                        <td>
+                          <button pButton type="button" icon="pi pi-search" class="p-button-text p-button-sm" (click)="abrirBuscaKit(i)" aria-label="Trocar produto"></button>
+                          <button pButton type="button" icon="pi pi-trash" class="p-button-text p-button-sm p-button-danger" (click)="removerItemKit(i)" aria-label="Remover"></button>
+                        </td>
                       </tr>
                     </ng-template>
                     <ng-template pTemplate="footer">
-                      <tr><td colspan="4" style="text-align:right;font-weight:700">Total de itens: {{ kitItens().length }}</td></tr>
+                      <tr>
+                        <td colspan="6" style="text-align:right;font-weight:700">
+                          Total de itens: {{ kitItens().length }} &nbsp;•&nbsp;
+                          Subtotal: {{ kitSubtotal() | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}
+                        </td>
+                      </tr>
                     </ng-template>
                   </p-table>
                 }
@@ -506,7 +533,12 @@ export class ProdutosFormPage implements OnInit, OnDestroy {
 
   readonly refFabricantes = signal<{fabricante:string;codigo:string;refMontadora:string;principal:boolean}[]>([]);
   readonly fotosPreview = signal<{name:string;url:string}[]>([]);
-  readonly kitItens = signal<{codigo:string;descricao:string;quantidade:number}[]>([]);
+  readonly kitItens = signal<{codigo:string;descricao:string;quantidade:number;precoVenda:number}[]>([]);
+  readonly kitSubtotal = computed(() =>
+    this.kitItens().reduce((s, i) => s + (i.precoVenda ?? 0) * (i.quantidade ?? 1), 0)
+  );
+  kitBuscaIndex = -1;
+  showKitDialog = false;
 
   readonly unidadeOptions = [
     { label: 'Unidade (UN)', value: 'UN' },
@@ -713,11 +745,33 @@ export class ProdutosFormPage implements OnInit, OnDestroy {
   }
 
   adicionarItemKit(): void {
-    this.kitItens.update((k) => [...k, { codigo: '', descricao: 'Produto ' + (k.length + 1), quantidade: 1 }]);
+    this.kitItens.update((k) => [...k, { codigo: '', descricao: 'Produto ' + (k.length + 1), quantidade: 1, precoVenda: 0 }]);
   }
 
   removerItemKit(i: number): void {
     this.kitItens.update((k) => k.filter((_, idx) => idx !== i));
+  }
+
+  abrirBuscaKit(index?: number): void {
+    this.kitBuscaIndex = index ?? -1;
+    this.showKitDialog = true;
+  }
+
+  onKitProdutoSelecionado(produto: ProdutoItem): void {
+    if (this.kitBuscaIndex >= 0) {
+      this.kitItens.update(k => k.map((item, i) => i === this.kitBuscaIndex
+        ? { ...item, codigo: produto.codigo, descricao: produto.descricao, precoVenda: produto.precoVenda ?? 0 }
+        : item
+      ));
+    } else {
+      this.kitItens.update(k => [...k, {
+        codigo: produto.codigo,
+        descricao: produto.descricao,
+        quantidade: 1,
+        precoVenda: produto.precoVenda ?? 0
+      }]);
+    }
+    this.showKitDialog = false;
   }
 
   toast(msg: string, error: boolean): void {
