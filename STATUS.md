@@ -324,3 +324,106 @@ Status: sistema completo e rodando.
 - Adicionar item a pre-venda
 - Avancar status: ABERTA -> SEPARADA
 - Abrir sessao de caixa (ABERTO)
+
+## Bloco B — B-005, B-007, B-008 (2026-05-19)
+
+Status: implementado em 2026-05-19.
+
+### B-005 [FE] Wizard de Transferência de Estoque
+
+- `src/app/features/estoque/transferencia-estoque.page.ts` (criado)
+  - Wizard 3 passos com p-steps PrimeNG
+  - Passo 0: ProdutoBuscaDialog + p-inputNumber para quantidade
+  - Passo 1: Dropdown origem/destino com saldo simulado por loja
+  - Passo 2: Resumo com valor estimado e confirmação
+  - Passo 3: Tela de sucesso com opções de nova transferência ou ver saldos
+  - POST /api/v1/estoque/transferencias com fallback demo
+  - GET /api/v1/core/admin/lojas para popular dropdowns com fallback DEMO_LOJAS
+- `src/app/app.routes.ts` atualizado: /estoque/transferencias → TransferenciaEstoquePage (era WorkspacePage)
+
+### B-007 [FE] AutorizarDescontoDialog
+
+- `src/app/shared/autorizar-desconto-dialog/autorizar-desconto-dialog.component.ts` (criado)
+  - Dialog modal com login/senha do gerente (p-password com toggleMask)
+  - Exibe número da pré-venda e desconto solicitado em badge p-tag
+  - POST /api/v1/vendas/pre-vendas/{id}/autorizar-desconto com fallback demo
+  - Emite token de autorização via @Output() autorizado
+- `src/app/features/pre-venda/pre-venda-form.page.ts` integrado:
+  - AutorizarDescontoDialogComponent adicionado ao imports e template
+  - showAutorizarDescontoDialog, tokenDesconto, descontoSolicitado adicionados
+  - onDescontoAutorizado() emite toast de sucesso e persiste token
+  - Badge "Desconto autorizado" exibido no header após autorização
+
+### B-008 [FE] HistoricoVendasDialog
+
+- `src/app/shared/historico-vendas-dialog/historico-vendas-dialog.component.ts` (criado)
+  - Dialog 92vw/900px com tabela completa de histórico
+  - Filtros: data de, data até, texto por produto com debounce
+  - Colunas: Loja, Data, Tipo (Venda/Dev.), Documento, Código, Descrição, Aplicação, Qtd, Valor
+  - Linha de total do período no footer da tabela
+  - p-skeleton durante loading, emptyMessage quando vazio
+  - GET /api/v1/vendas/pre-vendas/{pvId}/historico-cliente com fallback DEMO_HISTORICO
+  - computed() Angular correto para totalPeriodo
+- `src/app/features/pre-venda/pre-venda-form.page.ts` integrado:
+  - HistoricoVendasDialogComponent adicionado ao imports e template
+  - Botão "Histórico" (desabilitado sem cliente) no cabeçalho da pré-venda
+  - showHistoricoDialog adicionado à classe
+
+### Validação B-005/B-007/B-008:
+
+- `npm run build`: verde em 2026-05-19 (zero erros TypeScript; 2 warnings de budget CSS pré-existentes em pre-venda-form e pdv).
+- `npm run test`: verde em 2026-05-19 (1/1 passando).
+
+## Bloco B — Páginas Frontend (B-001 a B-004) (2026-05-19)
+
+Status: implementado em 2026-05-19. Commit: `829d77d`
+
+### B-001 [FE] /core/usuarios — CRUD real
+
+- `src/app/features/core/usuarios/usuarios.page.ts` (criado)
+  - UsuariosPage com p-table, KPIs (total/ativos/inativos), busca filtrada via computed signal
+  - p-dialog criar/editar com formulário reativo (nome, email, login, senha, papel, ativo)
+  - Toggle ativo/inativo via ConfirmDialog PrimeNG
+  - Atalho Ctrl+N para novo usuário
+  - Severidade de papel por cor (ADMIN=danger, VENDEDOR=info, etc.)
+  - DatePipe para exibir ultimoAcesso formatado
+  - Fallback demo com 4 usuários quando backend offline
+  - Rota /core/usuarios atualizada de WorkspacePage para UsuariosPage
+
+### B-002 [FE] /core/lojas — CRUD real
+
+- `src/app/features/core/lojas/lojas.page.ts` (criado)
+  - LojasPage com p-table, busca filtrada, p-dialog criar/editar
+  - Campos: nome, CNPJ (com máscara), cidade, UF, telefone, e-mail, ativa
+  - Atalho Ctrl+N para nova loja
+  - Fallback demo com 2 lojas quando backend offline
+  - Rota /core/lojas atualizada de WorkspacePage para LojasPage
+
+### B-003 [FE] Cliente form 8 abas
+
+- `src/app/features/clientes/clientes-form.page.ts` (editado)
+  - 4 abas novas adicionadas: NFSe, Sócios, Referências, Mídias
+  - NFSe: optante Simples Nacional, alíquota ISS, deduzir construção civil (PJ only)
+  - Sócios: quadro societário com p-table, adicionar/remover via prompt (PJ only)
+  - Referências Comerciais: p-table com empresa/contato/telefone/limite, currency pipe
+  - Mídias: FileUpload PrimeNG com modo advanced, múltiplos arquivos, imagens e PDF
+  - getCtrl() helper retorna FormControl para uso nos [formControl] dos checkboxes
+  - tipoPessoa() via signal sincronizado com form control 'tipo'
+  - Novos campos no FormGroup: optanteSimplesNacional, aliquotaIss, deduzirConstrucaoCivil
+  - Imports adicionados: AbstractControl, FormControl, CurrencyPipe, FileUploadModule, InputNumberModule, TableModule
+
+### B-004 [FE] Produto form 6 abas
+
+- `src/app/features/produtos/produtos-form.page.ts` (editado)
+  - 3 abas novas: Referências (fabricantes inline edit), Fotos (galeria), Composição (kit)
+  - SelectButton para tipo de produto (SIMPLES/KIT/SERVIÇO) na primeira aba
+  - Referências: p-table inline editável com ngModel standalone, radio de "Principal"
+  - Fotos: FileUpload + galeria com preview de URLs, badge "Principal" na primeira foto
+  - Composição: disponível somente se tipo=KIT, p-table com inputNumber para quantidade
+  - Signals: refFabricantes, fotosPreview, kitItens
+  - Imports adicionados: FileUploadModule, SelectButtonModule, TableModule
+
+### Validação B-001 a B-004:
+
+- `npm run build`: verde em 2026-05-19 (zero erros TypeScript; 2 warnings de budget CSS pré-existentes nos componentes pre-venda e pdv).
+- `npm run test`: verde em 2026-05-19 (1/1 passando).

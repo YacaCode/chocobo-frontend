@@ -33,6 +33,8 @@ import { ClienteBuscaDialogComponent } from '../../shared/cliente-busca-dialog/c
 import type { ClienteItem } from '../../shared/cliente-busca-dialog/cliente-busca-dialog.component';
 import { FormaPagamentoDialogComponent } from '../../shared/forma-pagamento-dialog/forma-pagamento-dialog.component';
 import type { FormaPagamentoSelecionada } from '../../shared/forma-pagamento-dialog/forma-pagamento-dialog.component';
+import { AutorizarDescontoDialogComponent } from '../../shared/autorizar-desconto-dialog/autorizar-desconto-dialog.component';
+import { HistoricoVendasDialogComponent } from '../../shared/historico-vendas-dialog/historico-vendas-dialog.component';
 
 interface PreVendaItem {
   id?: string;
@@ -68,7 +70,8 @@ const DEMO_PV: PreVendaDetalhe = {
   imports: [
     ButtonModule, ConfirmDialogModule, CurrencyPipe, FormsModule, InputNumberModule, InputTextModule,
     ReactiveFormsModule, TableModule, TagModule, ToastModule,
-    ProdutoBuscaDialogComponent, ClienteBuscaDialogComponent, FormaPagamentoDialogComponent
+    ProdutoBuscaDialogComponent, ClienteBuscaDialogComponent, FormaPagamentoDialogComponent,
+    AutorizarDescontoDialogComponent, HistoricoVendasDialogComponent
   ],
   providers: [MessageService, ConfirmationService],
   template: `
@@ -91,6 +94,19 @@ const DEMO_PV: PreVendaDetalhe = {
       (pagamentoConfirmado)="onPagamentoConfirmado($event)">
     </chb-forma-pagamento-dialog>
 
+    <chb-autorizar-desconto-dialog
+      [(visible)]="showAutorizarDescontoDialog"
+      [pvId]="pvId() ?? ''"
+      [pvNumero]="pvNumero"
+      [desconto]="descontoSolicitado"
+      (autorizado)="onDescontoAutorizado($event)">
+    </chb-autorizar-desconto-dialog>
+
+    <chb-historico-vendas-dialog
+      [(visible)]="showHistoricoDialog"
+      [pvId]="pvId() ?? ''">
+    </chb-historico-vendas-dialog>
+
     <section class="pv-form">
       <!-- Cabecalho -->
       <header class="pv-cabecalho">
@@ -102,6 +118,11 @@ const DEMO_PV: PreVendaDetalhe = {
           <div class="pv-status">
             <span>Status:</span>
             <p-tag [value]="pvStatus()" [severity]="statusSeverity(pvStatus())"></p-tag>
+            @if (tokenDesconto()) {
+              <span class="desconto-autorizado-badge">
+                <i class="pi pi-check-circle" aria-hidden="true"></i> Desconto autorizado
+              </span>
+            }
           </div>
           <div class="pv-data">
             <span>Data:</span>
@@ -118,6 +139,12 @@ const DEMO_PV: PreVendaDetalhe = {
               <i class="pi pi-search" aria-hidden="true"></i>
             </button>
           </label>
+          <button pButton type="button" icon="pi pi-history" label="Histórico"
+                  class="p-button-text p-button-sm"
+                  [disabled]="!clienteSelecionado()"
+                  (click)="showHistoricoDialog = true"
+                  aria-label="Histórico de vendas do cliente">
+          </button>
           <div class="pv-vendedor">
             <span>Vendedor:</span>
             <strong>{{ vendedor() }}</strong>
@@ -703,6 +730,8 @@ const DEMO_PV: PreVendaDetalhe = {
       flex-wrap: wrap;
     }
 
+    .desconto-autorizado-badge { display:inline-flex;align-items:center;gap:0.35rem;font-size:0.78rem;color:#16a34a;font-weight:700; }
+
     @media (max-width: 900px) {
       .pv-body {
         grid-template-columns: 1fr;
@@ -740,6 +769,8 @@ export class PreVendaFormPage implements OnInit, OnDestroy {
   showProdutoDialog = false;
   showClienteDialog = false;
   showPagamentoDialog = false;
+  showAutorizarDescontoDialog = false;
+  showHistoricoDialog = false;
 
   readonly loading = signal(false);
   readonly salvando = signal(false);
@@ -752,6 +783,8 @@ export class PreVendaFormPage implements OnInit, OnDestroy {
   readonly itemEditando = signal<number | null>(null);
   readonly totalPago = signal(0);
   readonly formasPagamento = signal<FormaPagamentoSelecionada[]>([]);
+  readonly tokenDesconto = signal<string | null>(null);
+  readonly descontoSolicitado = signal(0);
 
   readonly subTotal = computed(() =>
     this.itens().reduce((acc, i) => acc + (i.qtd * i.precoUnitario), 0)
@@ -887,6 +920,11 @@ export class PreVendaFormPage implements OnInit, OnDestroy {
     const totalPago = formas.reduce((acc, f) => acc + f.valor, 0);
     this.totalPago.set(Math.round(totalPago * 100) / 100);
     this.messageService.add({ severity: 'success', summary: 'Pagamento registrado', detail: `Total: R$ ${totalPago.toFixed(2)}` });
+  }
+
+  onDescontoAutorizado(token: string): void {
+    this.tokenDesconto.set(token);
+    this.messageService.add({ severity: 'success', summary: 'Desconto autorizado!', detail: 'Gerente autorizou o desconto.', life: 3000 });
   }
 
   recalcularItem(index: number): void {

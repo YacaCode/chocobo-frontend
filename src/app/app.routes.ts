@@ -76,8 +76,7 @@ export const routes: Routes = [
   {
     path: 'estoque/transferencias',
     canActivate: [authGuard, storeGuard],
-    loadComponent: () => import('./features/workspace/workspace.page').then((m) => m.WorkspacePage),
-    data: { config: workspaceConfigs['stockTransfers'] }
+    loadComponent: () => import('./features/estoque/transferencia-estoque.page').then((m) => m.TransferenciaEstoquePage)
   },
   {
     path: 'estoque/inventarios',
