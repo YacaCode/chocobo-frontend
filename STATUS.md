@@ -430,7 +430,7 @@ Status: implementado em 2026-05-19. Commit: `829d77d`
 
 ## Blocos B-D - Auxiliares, Caixa, UX, Dark Mode e Dashboard (2026-05-19)
 
-Status: implementado em 2026-05-19. Commit: local nesta alteracao.
+Status: implementado em 2026-05-19. Commit: `4d4847d`
 
 ### B-006 [FE] Auxiliares
 
