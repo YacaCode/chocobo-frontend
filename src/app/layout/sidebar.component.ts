@@ -45,15 +45,21 @@ const navGroups: NavGroup[] = [
     items: [
       { label: 'Saldos', route: '/estoque/saldos', icon: 'pi pi-warehouse' },
       { label: 'Transferencias', route: '/estoque/transferencias', icon: 'pi pi-send' },
-      { label: 'Inventarios', route: '/estoque/inventarios', icon: 'pi pi-clipboard' }
+      { label: 'Inventarios', route: '/estoque/inventarios', icon: 'pi pi-clipboard' },
+      { label: 'Necessidade', route: '/estoque/necessidade-compra', icon: 'pi pi-list-check' }
     ]
   },
   {
-    label: 'Operação',
+    label: 'Vendas',
     items: [
-      { label: 'Pre-vendas', route: '/vendas/pre-vendas', icon: 'pi pi-file-edit' },
-      { label: 'PDV', route: '/vendas/pdv', icon: 'pi pi-calculator' },
-      { label: 'Caixa', route: '/caixa/operacoes', icon: 'pi pi-wallet' }
+      { label: 'Pre-vendas', route: '/vendas/pre-vendas', icon: 'pi pi-file-edit' }
+    ]
+  },
+  {
+    label: 'Caixa',
+    items: [
+      { label: 'PDV', route: '/caixa/pdv', icon: 'pi pi-calculator' },
+      { label: 'Operacoes', route: '/caixa/operacoes', icon: 'pi pi-wallet' }
     ]
   },
   {
