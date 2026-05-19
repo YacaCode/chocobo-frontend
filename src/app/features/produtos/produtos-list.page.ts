@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Subject, debounceTime, distinctUntilChanged, takeUntil, catchError, of, finalize } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
@@ -53,7 +53,7 @@ const DEMO_PRODUTOS: Produto[] = [
 @Component({
   selector: 'chb-produtos-list',
   standalone: true,
-  imports: [ButtonModule, CheckboxModule, CurrencyPipe, FormsModule, InputTextModule, SkeletonModule, TableModule, TagModule],
+  imports: [ButtonModule, CheckboxModule, CurrencyPipe, FormsModule, InputTextModule, RouterLink, SkeletonModule, TableModule, TagModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <section class="page">
@@ -66,7 +66,7 @@ const DEMO_PRODUTOS: Produto[] = [
           </div>
         </div>
         <div class="page-actions">
-          <button pButton type="button" icon="pi pi-upload" label="Importar CSV" class="p-button-outlined" (click)="toast('Importacao em desenvolvimento')"></button>
+          <button pButton type="button" icon="pi pi-upload" label="Importar CSV" class="p-button-outlined" routerLink="/cadastros/produtos/importar"></button>
           <button pButton type="button" icon="pi pi-box" label="Novo Produto" (click)="novoProduto()"></button>
         </div>
       </header>

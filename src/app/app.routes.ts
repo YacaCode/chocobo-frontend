@@ -61,6 +61,12 @@ export const routes: Routes = [
     canActivate: [authGuard, storeGuard],
     loadComponent: () => import('./features/produtos/produtos-form.page').then((m) => m.ProdutosFormPage)
   },
+  // IMPORTANTE: importar deve vir ANTES de :id para não ser capturada como parâmetro
+  {
+    path: 'cadastros/produtos/importar',
+    canActivate: [authGuard, storeGuard],
+    loadComponent: () => import('./features/produtos/produto-importar.page').then(m => m.ProdutoImportarPage)
+  },
   {
     path: 'cadastros/produtos/:id',
     canActivate: [authGuard, storeGuard],
