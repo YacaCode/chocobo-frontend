@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { NavigationEnd, Router } from '@angular/router';
+import { NavigationEnd, Router, RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 
 import { AuthService } from '../core/auth/auth.service';
@@ -20,13 +20,14 @@ const pageTitles: Record<string, string> = {
   '/compras': 'Compras',
   '/fiscal': 'Fiscal',
   '/servicos/oficina': 'Oficina',
-  '/health': 'Saude do backend'
+  '/health': 'Saude do backend',
+  '/preferencias': 'Preferencias'
 };
 
 @Component({
   selector: 'chb-topbar',
   standalone: true,
-  imports: [ButtonModule],
+  imports: [ButtonModule, RouterLink],
   template: `
     <header class="topbar">
       <div class="topbar__title">
@@ -46,6 +47,14 @@ const pageTitles: Record<string, string> = {
           label="Trocar loja"
           (click)="switchStore()">
         </button>
+        <a
+          pButton
+          routerLink="/preferencias"
+          type="button"
+          class="p-button-text"
+          icon="pi pi-cog"
+          aria-label="Preferências">
+        </a>
         <button
           pButton
           type="button"

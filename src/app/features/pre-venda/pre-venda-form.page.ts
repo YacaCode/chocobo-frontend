@@ -24,7 +24,8 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ToastModule } from 'primeng/toast';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 import { ProdutoBuscaDialogComponent } from '../../shared/produto-busca-dialog/produto-busca-dialog.component';
 import type { ProdutoItem } from '../../shared/produto-busca-dialog/produto-busca-dialog.component';
@@ -65,13 +66,14 @@ const DEMO_PV: PreVendaDetalhe = {
   selector: 'chb-pre-venda-form-page',
   standalone: true,
   imports: [
-    ButtonModule, CurrencyPipe, FormsModule, InputNumberModule, InputTextModule,
+    ButtonModule, ConfirmDialogModule, CurrencyPipe, FormsModule, InputNumberModule, InputTextModule,
     ReactiveFormsModule, TableModule, TagModule, ToastModule,
     ProdutoBuscaDialogComponent, ClienteBuscaDialogComponent, FormaPagamentoDialogComponent
   ],
-  providers: [MessageService],
+  providers: [MessageService, ConfirmationService],
   template: `
     <p-toast></p-toast>
+    <p-confirmDialog></p-confirmDialog>
 
     <chb-produto-busca-dialog
       [(visible)]="showProdutoDialog"
@@ -732,6 +734,7 @@ export class PreVendaFormPage implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly fb = inject(FormBuilder);
   private readonly messageService = inject(MessageService);
+  private readonly confirmationService = inject(ConfirmationService);
   private readonly destroy$ = new Subject<void>();
 
   showProdutoDialog = false;
@@ -956,11 +959,19 @@ export class PreVendaFormPage implements OnInit, OnDestroy {
   }
 
   cancelar(): void {
-    if (this.itens().length > 0) {
-      const confirma = window.confirm('Deseja sair sem salvar as alteracoes?');
-      if (!confirma) return;
+    if (this.itens().length === 0) {
+      void this.router.navigate(['/vendas/pre-vendas']);
+      return;
     }
-    void this.router.navigate(['/vendas/pre-vendas']);
+    this.confirmationService.confirm({
+      message: 'Deseja sair sem salvar as alterações? Todas as mudanças serão perdidas.',
+      header: 'Confirmar saída',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Sair sem salvar',
+      rejectLabel: 'Continuar editando',
+      acceptButtonStyleClass: 'p-button-danger',
+      accept: () => void this.router.navigate(['/vendas/pre-vendas'])
+    });
   }
 
   statusSeverity(status: string): 'info' | 'warning' | 'success' | 'danger' | 'secondary' {

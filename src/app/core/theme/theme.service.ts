@@ -25,6 +25,15 @@ export class ThemeService {
     this.darkModeSignal.set(this.readSystemPreference());
   }
 
+  setTheme(tema: 'light' | 'dark' | 'auto'): void {
+    const effective = tema === 'auto'
+      ? (this.systemPreference?.matches ?? false ? 'dark' : 'light')
+      : tema;
+    this.darkModeSignal.set(effective === 'dark');
+    this.document.documentElement.setAttribute('data-theme', effective);
+    localStorage.setItem('chb_theme', tema);
+  }
+
   private readSystemPreference(): boolean {
     return this.systemPreference?.matches ?? false;
   }

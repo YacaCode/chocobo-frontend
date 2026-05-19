@@ -222,6 +222,57 @@ Status: implementado em 2026-05-18.
 
 - `npm run build`: verde em 2026-05-18 (zero erros TypeScript, apenas warnings de budget CSS nos componentes do outro agente).
 
+## Bloco A — Correções Urgentes FE (2026-05-19)
+
+Status: implementado em 2026-05-19.
+
+### A-001 [FE] ConfirmDialog no cancelar() do pre-venda-form
+
+- `src/app/features/pre-venda/pre-venda-form.page.ts`
+  - Removido `window.confirm()` do método `cancelar()`
+  - Adicionado `ConfirmDialogModule` aos imports do componente
+  - Adicionado `ConfirmationService` aos providers
+  - Injetado `ConfirmationService` na classe
+  - Adicionado `<p-confirmDialog>` ao template (logo após `<p-toast>`)
+  - Método `cancelar()` reescrito: se sem itens, navega direto; senão exibe dialog PrimeNG com opções "Sair sem salvar" / "Continuar editando"
+
+### A-002 [FE] Páginas 403 e 404 com mascote Chocobo
+
+- `src/app/features/not-found/not-found.page.ts` (editado)
+  - Template substituído com SVG inline do pássaro Chocobo amarelo
+  - Código 404 em destaque, título e descrição amigáveis
+  - Link "Voltar ao início" com pButton + routerLink="/dashboard"
+  - Estilos de centralizacao e tipografia com variáveis CSS do tema
+
+- `src/app/features/forbidden/forbidden.page.ts` (criado)
+  - Mesmo padrão visual do 404, porém código 403 em vermelho (#dc2626)
+  - SVG do Chocobo com braços cruzados (recusa)
+  - Mensagem "Acesso negado — O Chocobo não vai deixar você passar"
+
+- `src/app/app.routes.ts` atualizado:
+  - Adicionada rota `path: '403'` → ForbiddenPage (lazy)
+  - Adicionada rota `path: 'preferencias'` → PreferenciasPage (lazy, canActivate: authGuard)
+
+### A-003 [FE] Página /preferencias
+
+- `src/app/features/preferencias/preferencias.page.ts` (criado)
+  - Seção "Aparência": SelectButton para tema (Claro/Escuro/Auto) e densidade (Compacto/Normal/Espaçado)
+  - Seção "Sons": Checkbox para som de bip no PDV
+  - Salva em `localStorage['chb_prefs']` com toast de sucesso
+  - Ao mudar o tema: chama `ThemeService.setTheme()`
+
+- `src/app/core/theme/theme.service.ts` atualizado:
+  - Adicionado método público `setTheme(tema: 'light' | 'dark' | 'auto')` que aplica `data-theme` no HTML e persiste em localStorage
+
+- `src/app/layout/topbar.component.ts` atualizado:
+  - Adicionado botão (ícone `pi pi-cog`) na topbar com routerLink="/preferencias"
+  - Adicionado "Preferencias" ao mapa de títulos de página
+
+### Validação A-001/A-002/A-003:
+
+- `npm run build`: verde em 2026-05-19 (zero erros TypeScript; 2 warnings de budget CSS pré-existentes).
+- `npm run test`: verde em 2026-05-19 (1/1 passando).
+
 ## Backend Full-Stack Verification (2026-05-19)
 
 Status: sistema completo e rodando.

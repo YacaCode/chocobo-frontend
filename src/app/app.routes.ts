@@ -174,6 +174,15 @@ export const routes: Routes = [
     loadComponent: () => import('./features/health/health.page').then((m) => m.HealthPage)
   },
   {
+    path: '403',
+    loadComponent: () => import('./features/forbidden/forbidden.page').then((m) => m.ForbiddenPage)
+  },
+  {
+    path: 'preferencias',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/preferencias/preferencias.page').then((m) => m.PreferenciasPage)
+  },
+  {
     path: '**',
     loadComponent: () => import('./features/not-found/not-found.page').then((m) => m.NotFoundPage)
   }
