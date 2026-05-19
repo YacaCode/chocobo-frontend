@@ -66,10 +66,13 @@ const STATUS_OPTIONS = [
 
     <section class="pv-page">
       <header class="pv-header">
-        <div>
-          <p>Vendas</p>
-          <h2>Pre-vendas</h2>
-          <span>Gerencie pre-vendas de balcao com reserva de estoque, descontos e acompanhamento de status.</span>
+        <div class="pv-heading">
+          <span class="pv-heading-icon" aria-hidden="true"><i class="pi pi-file-edit"></i></span>
+          <div>
+            <p>Vendas</p>
+            <h2>Pre-vendas</h2>
+            <span>Gerencie pre-vendas de balcao com reserva de estoque, descontos e acompanhamento de status.</span>
+          </div>
         </div>
         <div class="pv-header-actions">
           <button pButton type="button" icon="pi pi-refresh" label="Atualizar" class="p-button-outlined" (click)="carregar()"></button>
@@ -115,7 +118,7 @@ const STATUS_OPTIONS = [
                 placeholder="Buscar por numero ou cliente..."
                 [(ngModel)]="busca"
                 (ngModelChange)="onBuscaChange($event)"
-                style="width:260px" />
+                class="pv-search-input" />
             </span>
             <p-dropdown
               [(ngModel)]="filtroStatus"
@@ -181,7 +184,7 @@ const STATUS_OPTIONS = [
   styles: [`
     .pv-page {
       display: grid;
-      gap: 1rem;
+      gap: 0.85rem;
     }
 
     .pv-header {
@@ -189,11 +192,29 @@ const STATUS_OPTIONS = [
       align-items: flex-start;
       justify-content: space-between;
       gap: 1rem;
-      padding: 1.25rem;
+      padding: 1rem;
       border: 1px solid var(--chb-border);
       border-radius: 0.5rem;
       background: var(--chb-surface);
-      box-shadow: 0 10px 28px rgba(15,23,42,0.06);
+      box-shadow: var(--chb-shadow-soft);
+    }
+
+    .pv-heading {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      min-width: 0;
+    }
+
+    .pv-heading-icon {
+      display: grid;
+      width: 2.25rem;
+      height: 2.25rem;
+      flex: 0 0 auto;
+      place-items: center;
+      border-radius: 0.45rem;
+      background: var(--chb-teal-50);
+      color: var(--chb-teal);
     }
 
     .pv-header p {
@@ -207,7 +228,7 @@ const STATUS_OPTIONS = [
     h2 {
       margin: 0;
       color: var(--chb-text);
-      font-size: 1.65rem;
+      font-size: 1.35rem;
       line-height: 1.15;
     }
 
@@ -216,12 +237,13 @@ const STATUS_OPTIONS = [
       margin-top: 0.4rem;
       color: var(--chb-text-muted);
       max-width: 44rem;
+      font-size: 0.9rem;
       line-height: 1.5;
     }
 
     .pv-header-actions {
       display: flex;
-      gap: 0.75rem;
+      gap: 0.6rem;
       flex-wrap: wrap;
       justify-content: flex-end;
     }
@@ -229,24 +251,24 @@ const STATUS_OPTIONS = [
     .pv-kpis {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 1rem;
+      gap: 0.85rem;
     }
 
     .kpi {
       display: flex;
       align-items: center;
-      gap: 0.9rem;
-      padding: 1rem;
+      gap: 0.7rem;
+      padding: 0.8rem;
       border: 1px solid var(--chb-border);
       border-radius: 0.5rem;
       background: var(--chb-surface);
-      box-shadow: 0 10px 28px rgba(15,23,42,0.06);
+      box-shadow: var(--chb-shadow-soft);
     }
 
     .kpi i {
       display: grid;
-      width: 2.6rem;
-      height: 2.6rem;
+      width: 2.25rem;
+      height: 2.25rem;
       flex: 0 0 auto;
       place-items: center;
       border-radius: 0.5rem;
@@ -260,14 +282,15 @@ const STATUS_OPTIONS = [
     .kpi--info i { background: var(--chb-navy-50); color: var(--chb-navy); }
 
     .kpi span, .kpi small { display: block; color: var(--chb-text-muted); font-size: 0.78rem; font-weight: 800; }
-    .kpi strong { display: block; margin: 0.15rem 0; color: var(--chb-text); font-size: 1.35rem; }
+    .kpi strong { display: block; margin: 0.15rem 0; color: var(--chb-text); font-size: 1.12rem; }
 
     .pv-panel {
       border: 1px solid var(--chb-border);
       border-radius: 0.5rem;
       background: var(--chb-surface);
-      box-shadow: 0 10px 28px rgba(15,23,42,0.06);
+      box-shadow: var(--chb-shadow-soft);
       overflow: hidden;
+      min-width: 0;
     }
 
     .pv-toolbar {
@@ -275,7 +298,7 @@ const STATUS_OPTIONS = [
       align-items: center;
       justify-content: space-between;
       gap: 1rem;
-      padding: 1rem;
+      padding: 0.85rem;
       border-bottom: 1px solid var(--chb-border);
       flex-wrap: wrap;
     }
@@ -287,6 +310,11 @@ const STATUS_OPTIONS = [
       flex-wrap: wrap;
     }
 
+    .pv-search-input {
+      width: 16rem;
+      max-width: 100%;
+    }
+
     .pv-hint {
       color: var(--chb-text-muted);
       font-size: 0.75rem;
@@ -295,6 +323,12 @@ const STATUS_OPTIONS = [
     @media (max-width: 767px) {
       .pv-kpis { grid-template-columns: 1fr; }
       .pv-header { flex-direction: column; }
+      .pv-heading { width: 100%; }
+      .pv-toolbar-filters,
+      .pv-toolbar-filters > span,
+      .pv-search-input {
+        width: 100%;
+      }
     }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -417,11 +451,14 @@ function normalizePreVendas(response: unknown): PreVendaResumo[] {
   return (arr as Record<string, unknown>[]).map((r) => ({
     id: String(r['id'] ?? r['numero'] ?? ''),
     numero: String(r['numero'] ?? ''),
-    cliente: String(r['cliente'] ?? r['nomeCliente'] ?? ''),
+    // backend returns clienteNome (not cliente or nomeCliente)
+    cliente: String(r['clienteNome'] ?? r['cliente'] ?? r['nomeCliente'] ?? ''),
     vendedor: String(r['vendedor'] ?? r['nomeVendedor'] ?? ''),
-    data: String(r['data'] ?? r['dataEmissao'] ?? ''),
+    // backend returns createdAt (ISO OffsetDateTime string, not data or dataEmissao)
+    data: String(r['createdAt'] ?? r['data'] ?? r['dataEmissao'] ?? ''),
     status: String(r['status'] ?? 'ABERTA') as PreVendaResumo['status'],
     total: Number(r['total'] ?? r['valorTotal'] ?? 0),
+    // no item count in list response from backend — default to 0
     itens: Number(r['itens'] ?? r['quantidadeItens'] ?? 0)
   }));
 }

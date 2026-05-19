@@ -9,7 +9,7 @@ import { ButtonModule } from 'primeng/button';
   template: `
     <section class="not-found">
       <h2>Pagina nao encontrada</h2>
-      <a pButton routerLink="/health" label="Voltar para health"></a>
+      <a pButton routerLink="/dashboard" label="Voltar para dashboard"></a>
     </section>
   `,
   styles: [`

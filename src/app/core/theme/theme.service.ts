@@ -1,38 +1,31 @@
 import { DOCUMENT } from '@angular/common';
 import { effect, inject, Injectable, signal } from '@angular/core';
 
-const STORAGE_KEY = 'chocobo.theme';
-
 @Injectable({ providedIn: 'root' })
 export class ThemeService {
   private readonly document = inject(DOCUMENT);
-  private readonly darkModeSignal = signal(this.readInitialPreference());
+  private readonly systemPreference = window.matchMedia?.('(prefers-color-scheme: dark)') ?? null;
+  private readonly darkModeSignal = signal(this.readSystemPreference());
 
   readonly darkMode = this.darkModeSignal.asReadonly();
 
   constructor() {
+    this.systemPreference?.addEventListener('change', (event) => {
+      this.darkModeSignal.set(event.matches);
+    });
+
     effect(() => {
       const enabled = this.darkModeSignal();
       this.document.documentElement.classList.toggle('dark', enabled);
-      localStorage.setItem(STORAGE_KEY, enabled ? 'dark' : 'light');
+      this.document.documentElement.style.colorScheme = enabled ? 'dark' : 'light';
     });
   }
 
   toggle(): void {
-    this.darkModeSignal.update((current) => !current);
+    this.darkModeSignal.set(this.readSystemPreference());
   }
 
-  private readInitialPreference(): boolean {
-    const stored = localStorage.getItem(STORAGE_KEY);
-
-    if (stored === 'dark') {
-      return true;
-    }
-
-    if (stored === 'light') {
-      return false;
-    }
-
-    return window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false;
+  private readSystemPreference(): boolean {
+    return this.systemPreference?.matches ?? false;
   }
 }

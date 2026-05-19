@@ -1,4 +1,4 @@
-# PRD — Chocobo ERP
+# PRD — Chocobo
 
 > **Documento operacional.** Este é o **único** arquivo que o agente Codex executa em loop (padrão "Ralph"). O agente lê este PRD inteiro a cada iteração, identifica a próxima tarefa não concluída, executa, marca como feita, e repete.
 
@@ -82,7 +82,7 @@ Pare e aguarde intervenção humana quando:
 
 ### 1.1 Produto
 
-**Chocobo ERP** é a reconstrução moderna do ERP Smartbusiness para varejo automotivo (autopeças + oficina mecânica). Mantém **paridade funcional total** com o legacy e adiciona UX moderna, multi-tenant real, observabilidade nativa e arquitetura API-first.
+**Chocobo** é a reconstrução moderna do ERP Smartbusiness para varejo automotivo (autopeças + oficina mecânica). Mantém **paridade funcional total** com o legacy e adiciona UX moderna, multi-tenant real, observabilidade nativa e arquitetura API-first.
 
 ### 1.2 Missão
 

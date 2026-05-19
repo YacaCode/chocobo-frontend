@@ -63,10 +63,13 @@ const STATUS_FILTRO = [
 
     <section class="saldos-page">
       <header class="saldos-header">
-        <div>
-          <p>Estoque</p>
-          <h2>Saldos por Loja</h2>
-          <span>Visao consolidada de estoque disponivel, reservado, minimo e necessidade de compra.</span>
+        <div class="saldos-heading">
+          <span class="saldos-heading-icon" aria-hidden="true"><i class="pi pi-warehouse"></i></span>
+          <div>
+            <p>Estoque</p>
+            <h2>Saldos por Loja</h2>
+            <span>Visao consolidada de estoque disponivel, reservado, minimo e necessidade de compra.</span>
+          </div>
         </div>
         <div class="saldos-header-acoes">
           <button pButton type="button" icon="pi pi-download" label="Exportar" class="p-button-outlined" (click)="exportar()"></button>
@@ -120,7 +123,7 @@ const STATUS_FILTRO = [
                 placeholder="Codigo ou descricao..."
                 [(ngModel)]="busca"
                 (ngModelChange)="onBuscaChange($event)"
-                style="width:240px" />
+                class="saldos-search-input" />
             </span>
             <p-dropdown
               [(ngModel)]="filtroStatus"
@@ -184,7 +187,7 @@ const STATUS_FILTRO = [
   styles: [`
     .saldos-page {
       display: grid;
-      gap: 1rem;
+      gap: 0.85rem;
     }
 
     .saldos-header {
@@ -192,12 +195,30 @@ const STATUS_FILTRO = [
       align-items: flex-start;
       justify-content: space-between;
       gap: 1rem;
-      padding: 1.25rem;
+      padding: 1rem;
       border: 1px solid var(--chb-border);
       border-radius: 0.5rem;
       background: var(--chb-surface);
-      box-shadow: 0 10px 28px rgba(15,23,42,0.06);
+      box-shadow: var(--chb-shadow-soft);
       flex-wrap: wrap;
+    }
+
+    .saldos-heading {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      min-width: 0;
+    }
+
+    .saldos-heading-icon {
+      display: grid;
+      width: 2.25rem;
+      height: 2.25rem;
+      flex: 0 0 auto;
+      place-items: center;
+      border-radius: 0.45rem;
+      background: var(--chb-teal-50);
+      color: var(--chb-teal);
     }
 
     .saldos-header p {
@@ -211,7 +232,7 @@ const STATUS_FILTRO = [
     h2 {
       margin: 0;
       color: var(--chb-text);
-      font-size: 1.65rem;
+      font-size: 1.35rem;
       line-height: 1.15;
     }
 
@@ -220,12 +241,13 @@ const STATUS_FILTRO = [
       margin-top: 0.4rem;
       color: var(--chb-text-muted);
       max-width: 44rem;
+      font-size: 0.9rem;
       line-height: 1.5;
     }
 
     .saldos-header-acoes {
       display: flex;
-      gap: 0.75rem;
+      gap: 0.6rem;
       flex-wrap: wrap;
       justify-content: flex-end;
     }
@@ -233,24 +255,24 @@ const STATUS_FILTRO = [
     .saldos-kpis {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 1rem;
+      gap: 0.85rem;
     }
 
     .kpi {
       display: flex;
       align-items: center;
-      gap: 0.9rem;
-      padding: 1rem;
+      gap: 0.7rem;
+      padding: 0.8rem;
       border: 1px solid var(--chb-border);
       border-radius: 0.5rem;
       background: var(--chb-surface);
-      box-shadow: 0 10px 28px rgba(15,23,42,0.06);
+      box-shadow: var(--chb-shadow-soft);
     }
 
     .kpi i {
       display: grid;
-      width: 2.6rem;
-      height: 2.6rem;
+      width: 2.25rem;
+      height: 2.25rem;
       flex: 0 0 auto;
       place-items: center;
       border-radius: 0.5rem;
@@ -263,14 +285,15 @@ const STATUS_FILTRO = [
     .kpi--danger i { background: #fee2e2; color: #991b1b; }
 
     .kpi span, .kpi small { display: block; color: var(--chb-text-muted); font-size: 0.78rem; font-weight: 800; }
-    .kpi strong { display: block; margin: 0.15rem 0; color: var(--chb-text); font-size: 1.2rem; }
+    .kpi strong { display: block; margin: 0.15rem 0; color: var(--chb-text); font-size: 1.05rem; }
 
     .saldos-panel {
       border: 1px solid var(--chb-border);
       border-radius: 0.5rem;
       background: var(--chb-surface);
-      box-shadow: 0 10px 28px rgba(15,23,42,0.06);
+      box-shadow: var(--chb-shadow-soft);
       overflow: hidden;
+      min-width: 0;
     }
 
     .saldos-toolbar {
@@ -278,7 +301,7 @@ const STATUS_FILTRO = [
       align-items: center;
       justify-content: space-between;
       gap: 1rem;
-      padding: 1rem;
+      padding: 0.85rem;
       border-bottom: 1px solid var(--chb-border);
       flex-wrap: wrap;
     }
@@ -287,6 +310,11 @@ const STATUS_FILTRO = [
       display: flex;
       gap: 0.75rem;
       flex-wrap: wrap;
+    }
+
+    .saldos-search-input {
+      width: 16rem;
+      max-width: 100%;
     }
 
     .saldos-hint {
@@ -326,6 +354,12 @@ const STATUS_FILTRO = [
     @media (max-width: 767px) {
       .saldos-kpis { grid-template-columns: 1fr; }
       .saldos-header { flex-direction: column; }
+      .saldos-heading { width: 100%; }
+      .saldos-filtros,
+      .saldos-filtros > span,
+      .saldos-search-input {
+        width: 100%;
+      }
     }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -453,25 +487,35 @@ function normalizeSaldos(response: unknown): SaldoItem[] {
       : [];
 
   return (arr as Record<string, unknown>[]).map((r) => {
-    const disponivel = Number(r['disponivel'] ?? r['atual'] ?? r['qtdDisponivel'] ?? 0);
-    const minimo = Number(r['minimo'] ?? r['qtdMinima'] ?? 0);
-    let statusEstoque: SaldoItem['statusEstoque'] = 'NORMAL';
+    // Backend EstoqueSaldoResponse fields: qtdDisponivel (computed), qtdAtual, qtdMinima, qtdReservada
+    const disponivel = Number(r['qtdDisponivel'] ?? r['disponivel'] ?? r['qtdAtual'] ?? 0);
+    const minimo = Number(r['qtdMinima'] ?? r['minimo'] ?? 0);
 
-    if (disponivel === 0) statusEstoque = 'ZERADO';
-    else if (disponivel < minimo * 0.5) statusEstoque = 'COMPRAR';
-    else if (disponivel < minimo) statusEstoque = 'CRITICO';
+    // Backend computes status as 'OK'|'ABAIXO_MINIMO'|'SEM_ESTOQUE'; map to frontend enum
+    let statusEstoque: SaldoItem['statusEstoque'] = 'NORMAL';
+    const backendStatus = String(r['status'] ?? '');
+    if (backendStatus === 'SEM_ESTOQUE' || disponivel === 0) {
+      statusEstoque = 'ZERADO';
+    } else if (backendStatus === 'ABAIXO_MINIMO') {
+      statusEstoque = disponivel < minimo * 0.5 ? 'COMPRAR' : 'CRITICO';
+    } else if (disponivel < minimo * 0.5) {
+      statusEstoque = 'COMPRAR';
+    } else if (disponivel < minimo) {
+      statusEstoque = 'CRITICO';
+    }
 
     return {
       id: String(r['id'] ?? ''),
-      codigo: String(r['codigo'] ?? r['produto'] ?? ''),
-      descricao: String(r['descricao'] ?? r['nome'] ?? ''),
-      loja: String(r['loja'] ?? ''),
+      // codigoProduto and descricaoProduto are the real backend field names
+      codigo: String(r['codigoProduto'] ?? r['codigo'] ?? r['produto'] ?? ''),
+      descricao: String(r['descricaoProduto'] ?? r['descricao'] ?? r['nome'] ?? ''),
+      loja: String(r['lojaId'] ?? r['loja'] ?? ''),
       disponivel,
-      reservado: Number(r['reservado'] ?? 0),
+      reservado: Number(r['qtdReservada'] ?? r['reservado'] ?? 0),
       minimo,
       valorUnitario: Number(r['valorUnitario'] ?? r['preco'] ?? 0),
       valorTotal: Number(r['valorTotal'] ?? 0),
-      statusEstoque: (r['statusEstoque'] as SaldoItem['statusEstoque']) ?? statusEstoque
+      statusEstoque
     };
   });
 }

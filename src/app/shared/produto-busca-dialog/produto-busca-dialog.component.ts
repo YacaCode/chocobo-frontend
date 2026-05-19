@@ -48,7 +48,7 @@ const DEMO_PRODUTOS: ProdutoItem[] = [
       [(visible)]="visible"
       [modal]="true"
       [closable]="true"
-      [style]="{ width: '80vw', 'max-height': '80vh' }"
+      [style]="{ width: 'min(96vw, 62rem)', 'max-height': '84vh' }"
       [contentStyle]="{ padding: '0' }"
       header="Buscar Produto (F1)"
       (onHide)="onDialogHide()">
@@ -132,8 +132,8 @@ const DEMO_PRODUTOS: ProdutoItem[] = [
     .busca-header {
       display: flex;
       align-items: center;
-      gap: 1rem;
-      padding: 1rem;
+      gap: 0.75rem;
+      padding: 0.85rem;
       border-bottom: 1px solid var(--chb-border);
       flex-wrap: wrap;
     }
@@ -150,6 +150,9 @@ const DEMO_PRODUTOS: ProdutoItem[] = [
     .busca-hint {
       color: var(--chb-text-muted);
       font-size: 0.78rem;
+      border-radius: 999px;
+      background: var(--chb-surface-muted);
+      padding: 0.25rem 0.55rem;
     }
 
     .busca-table {
@@ -166,8 +169,16 @@ const DEMO_PRODUTOS: ProdutoItem[] = [
     }
 
     :host ::ng-deep .p-datatable .p-datatable-tbody > tr:hover {
-      background: var(--chb-yellow-50);
+      background: var(--chb-teal-50);
       cursor: pointer;
+    }
+
+    @media (max-width: 640px) {
+      .busca-input-wrap,
+      .busca-hint {
+        width: 100%;
+        min-width: 0;
+      }
     }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -277,8 +288,9 @@ function normalizeProdutos(response: unknown): ProdutoItem[] {
     descricao: String(r['descricao'] ?? r['nome'] ?? ''),
     fabricante: String(r['fabricante'] ?? ''),
     precoVenda: Number(r['precoVenda'] ?? r['preco'] ?? 0),
-    qtdDisponivel: Number(r['qtdDisponivel'] ?? r['saldo'] ?? r['estoque'] ?? 0),
+    // qtdDisponivel not available from produto endpoint (stock from EstoqueController); use 0
+    qtdDisponivel: Number(r['qtdDisponivel'] ?? r['saldo'] ?? r['estoqueAtual'] ?? 0),
     secao: String(r['secao'] ?? ''),
-    aplicacao: String(r['aplicacao'] ?? '')
+    aplicacao: r['referencia'] ? String(r['referencia']) : String(r['aplicacao'] ?? '')
   }));
 }

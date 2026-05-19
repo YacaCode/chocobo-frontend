@@ -266,7 +266,7 @@ const DEMO_PV: PreVendaDetalhe = {
               type="button"
               icon="pi pi-credit-card"
               label="Pagamento"
-              class="p-button-outlined w-full"
+              class="totais-action totais-action--secondary"
               [disabled]="itens().length === 0"
               (click)="abrirPagamentoDialog()">
             </button>
@@ -275,7 +275,7 @@ const DEMO_PV: PreVendaDetalhe = {
               type="button"
               icon="pi pi-check-circle"
               label="Conferir (F8)"
-              class="p-button-outlined p-button-warning w-full"
+              class="totais-action totais-action--warning"
               [disabled]="itens().length === 0"
               (click)="conferir()">
             </button>
@@ -284,7 +284,7 @@ const DEMO_PV: PreVendaDetalhe = {
               type="button"
               icon="pi pi-save"
               label="Salvar (Ctrl+S)"
-              class="w-full"
+              class="totais-action totais-action--primary"
               [loading]="salvando()"
               (click)="salvar()">
             </button>
@@ -305,25 +305,26 @@ const DEMO_PV: PreVendaDetalhe = {
   styles: [`
     .pv-form {
       display: grid;
-      gap: 1rem;
+      gap: 0.85rem;
+      min-width: 0;
     }
 
     .pv-cabecalho {
       display: flex;
       align-items: flex-start;
-      gap: 1.5rem;
-      padding: 1rem 1.25rem;
+      gap: 1rem;
+      padding: 0.85rem 1rem;
       border: 1px solid var(--chb-border);
       border-radius: 0.5rem;
       background: var(--chb-surface);
-      box-shadow: 0 10px 28px rgba(15,23,42,0.06);
+      box-shadow: var(--chb-shadow-soft);
       flex-wrap: wrap;
     }
 
     .pv-cabecalho-info {
       display: flex;
       align-items: center;
-      gap: 1.5rem;
+      gap: 1rem;
       flex-wrap: wrap;
     }
 
@@ -338,7 +339,7 @@ const DEMO_PV: PreVendaDetalhe = {
     h2 {
       margin: 0;
       color: var(--chb-text);
-      font-size: 1.4rem;
+      font-size: 1.25rem;
     }
 
     .pv-status, .pv-data, .pv-vendedor {
@@ -357,9 +358,10 @@ const DEMO_PV: PreVendaDetalhe = {
     .pv-cliente-wrap {
       display: flex;
       align-items: center;
-      gap: 1.5rem;
+      gap: 0.85rem;
       flex: 1;
       flex-wrap: wrap;
+      min-width: 0;
     }
 
     .pv-cliente-wrap label {
@@ -385,7 +387,7 @@ const DEMO_PV: PreVendaDetalhe = {
       gap: 0.5rem;
       width: 100%;
       min-height: 2.4rem;
-      padding: 0.5rem 0.75rem;
+      padding: 0.48rem 0.65rem;
       border: 1px dashed var(--chb-border);
       border-radius: 0.4rem;
       background: var(--chb-surface-muted);
@@ -397,7 +399,8 @@ const DEMO_PV: PreVendaDetalhe = {
     }
 
     .btn-cliente:hover {
-      border-color: var(--chb-yellow);
+      border-color: var(--chb-teal);
+      background: var(--chb-teal-50);
     }
 
     .btn-cliente span {
@@ -406,40 +409,46 @@ const DEMO_PV: PreVendaDetalhe = {
 
     .pv-body {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 260px;
-      gap: 1rem;
+      grid-template-columns: minmax(0, 1fr) 16rem;
+      gap: 0.85rem;
       align-items: start;
+      min-width: 0;
     }
 
     .pv-itens-panel {
       border: 1px solid var(--chb-border);
       border-radius: 0.5rem;
       background: var(--chb-surface);
-      box-shadow: 0 10px 28px rgba(15,23,42,0.06);
+      box-shadow: var(--chb-shadow-soft);
       overflow: hidden;
+      min-width: 0;
     }
 
     .pv-itens-toolbar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0.75rem 1rem;
+      gap: 0.75rem;
+      padding: 0.65rem 0.85rem;
       border-bottom: 1px solid var(--chb-border);
       font-weight: 700;
       color: var(--chb-text);
+      flex-wrap: wrap;
     }
 
     .pv-entrada-rapida {
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      padding: 0.75rem 1rem;
+      padding: 0.65rem 0.85rem;
       border-bottom: 1px solid var(--chb-border);
       background: var(--chb-surface-muted);
+      flex-wrap: wrap;
     }
 
     .entrada-codigo {
       flex: 1;
+      min-width: 12rem;
     }
 
     .pv-itens-table {
@@ -448,13 +457,14 @@ const DEMO_PV: PreVendaDetalhe = {
 
     .itens-table {
       width: 100%;
+      min-width: 46rem;
       border-collapse: collapse;
-      font-size: 0.875rem;
+      font-size: 0.84rem;
     }
 
     .itens-table th {
-      padding: 0.6rem 0.75rem;
-      background: var(--chb-surface-muted);
+      padding: 0.55rem 0.65rem;
+      background: color-mix(in srgb, var(--chb-surface-muted) 88%, var(--chb-teal-50));
       color: var(--chb-text-muted);
       font-size: 0.75rem;
       font-weight: 800;
@@ -464,14 +474,19 @@ const DEMO_PV: PreVendaDetalhe = {
     }
 
     .itens-table td {
-      padding: 0.5rem 0.75rem;
+      padding: 0.48rem 0.65rem;
       border-bottom: 1px solid var(--chb-border);
       color: var(--chb-text);
       vertical-align: middle;
     }
 
     .item-row:hover {
-      background: var(--chb-surface-muted);
+      background: color-mix(in srgb, var(--chb-teal-50) 52%, var(--chb-surface));
+    }
+
+    .item-row {
+      animation: chb-fade-rise 140ms ease-out both;
+      transition: background-color 120ms ease;
     }
 
     .item-seq {
@@ -552,8 +567,8 @@ const DEMO_PV: PreVendaDetalhe = {
       border: 1px solid var(--chb-border);
       border-radius: 0.5rem;
       background: var(--chb-surface);
-      box-shadow: 0 10px 28px rgba(15,23,42,0.06);
-      padding: 1rem;
+      box-shadow: var(--chb-shadow-soft);
+      padding: 0.85rem;
       display: grid;
       gap: 0.6rem;
     }
@@ -607,11 +622,70 @@ const DEMO_PV: PreVendaDetalhe = {
 
     .totais-acoes {
       display: grid;
-      gap: 0.5rem;
+      gap: 0.55rem;
     }
 
-    .w-full {
+    .w-full,
+    .totais-action {
       width: 100%;
+    }
+
+    :host ::ng-deep .totais-action.p-button {
+      display: grid;
+      grid-template-columns: 1.35rem minmax(0, 1fr);
+      min-height: 2.45rem;
+      justify-items: start;
+      align-items: center;
+      gap: 0.55rem;
+      border-radius: 0.45rem;
+      padding: 0.55rem 0.7rem;
+      text-align: left;
+      transform: none;
+    }
+
+    :host ::ng-deep .totais-action .p-button-icon {
+      width: 1.1rem;
+      margin: 0;
+      text-align: center;
+    }
+
+    :host ::ng-deep .totais-action .p-button-label {
+      min-width: 0;
+      color: inherit;
+      font-size: 0.86rem;
+      line-height: 1.1;
+      overflow: hidden;
+      text-align: center;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    :host ::ng-deep .totais-action--secondary.p-button {
+      border: 1px solid color-mix(in srgb, var(--chb-yellow) 52%, var(--chb-border));
+      background: color-mix(in srgb, var(--chb-yellow-50) 78%, var(--chb-surface));
+      color: var(--chb-yellow-700);
+    }
+
+    :host ::ng-deep .totais-action--warning.p-button {
+      border: 1px solid #f59e0b;
+      background: #f59e0b;
+      color: #111827;
+      font-weight: 900;
+    }
+
+    :host ::ng-deep .totais-action--primary.p-button {
+      border: 1px solid var(--chb-teal);
+      background: var(--chb-teal);
+      color: #ffffff;
+    }
+
+    :host ::ng-deep .totais-action.p-button:enabled:hover {
+      filter: brightness(1.04);
+      box-shadow: var(--chb-shadow-soft);
+    }
+
+    :host ::ng-deep .totais-action.p-button:disabled {
+      opacity: 0.58;
     }
 
     .pv-atalhos {
@@ -630,6 +704,23 @@ const DEMO_PV: PreVendaDetalhe = {
     @media (max-width: 900px) {
       .pv-body {
         grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .pv-cabecalho,
+      .pv-cabecalho-info,
+      .pv-cliente-wrap,
+      .pv-itens-toolbar,
+      .pv-entrada-rapida {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .pv-entrada-rapida .p-button,
+      .totais-acoes .p-button {
+        width: 100%;
+        justify-content: center;
       }
     }
   `],

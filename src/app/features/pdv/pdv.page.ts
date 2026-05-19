@@ -69,8 +69,8 @@ interface PdvItem {
       <!-- Header minimalista -->
       <header class="pdv-header">
         <div class="pdv-header-brand">
-          <span class="pdv-brand-mark">C</span>
-          <span>Chocobo PDV</span>
+          <img src="/chocobo-logo.svg" alt="Chocobo PDV" class="pdv-brand-logo" />
+          <span>PDV</span>
         </div>
         @if (clienteSelecionado()) {
           <div class="pdv-cliente-badge">
@@ -248,18 +248,23 @@ interface PdvItem {
   styles: [`
     :host {
       display: block;
-      width: 100vw;
-      height: 100vh;
-      overflow: hidden;
+      width: 100%;
+      min-width: 0;
+      overflow: visible;
     }
 
     .pdv-shell {
       display: grid;
       grid-template-rows: auto 1fr auto;
-      height: 100vh;
-      background: #0f172a;
-      color: #f8fafc;
+      height: clamp(34rem, calc(100vh - 7.25rem), 50rem);
+      min-width: 0;
+      border: 1px solid var(--chb-border);
+      border-radius: 0.6rem;
+      background: color-mix(in srgb, var(--chb-surface) 96%, transparent);
+      color: var(--chb-text);
       overflow: hidden;
+      box-shadow: var(--chb-shadow);
+      animation: chb-fade-rise 180ms ease-out both;
     }
 
     .pdv-header {
@@ -267,9 +272,9 @@ interface PdvItem {
       align-items: center;
       justify-content: space-between;
       gap: 1rem;
-      padding: 0.6rem 1.25rem;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-      background: #1e293b;
+      padding: 0.55rem 0.9rem;
+      border-bottom: 1px solid var(--chb-border);
+      background: color-mix(in srgb, var(--chb-surface) 92%, var(--chb-surface-muted));
     }
 
     .pdv-header-brand {
@@ -280,16 +285,11 @@ interface PdvItem {
       font-size: 0.95rem;
     }
 
-    .pdv-brand-mark {
-      display: grid;
+    .pdv-brand-logo {
       width: 1.8rem;
       height: 1.8rem;
-      place-items: center;
-      border-radius: 0.35rem;
-      background: #f59e0b;
-      color: #111827;
-      font-weight: 900;
-      font-size: 0.85rem;
+      object-fit: contain;
+      filter: drop-shadow(0 0 3px color-mix(in srgb, var(--chb-teal-50) 70%, transparent));
     }
 
     .pdv-cliente-badge {
@@ -298,8 +298,8 @@ interface PdvItem {
       gap: 0.4rem;
       padding: 0.3rem 0.75rem;
       border-radius: 999px;
-      background: rgba(245,158,11,0.15);
-      color: #f59e0b;
+      background: color-mix(in srgb, var(--chb-yellow) 14%, var(--chb-surface));
+      color: var(--chb-yellow-700);
       font-size: 0.85rem;
       font-weight: 700;
     }
@@ -311,21 +311,22 @@ interface PdvItem {
     }
 
     .pdv-hora {
-      color: rgba(248,250,252,0.6);
+      color: var(--chb-text-muted);
       font-size: 0.85rem;
       font-family: monospace;
     }
 
     .pdv-body {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 300px;
+      grid-template-columns: minmax(0, 1fr) 18rem;
+      min-width: 0;
       overflow: hidden;
     }
 
     .pdv-esquerda {
       display: grid;
       grid-template-rows: auto 1fr;
-      border-right: 1px solid rgba(255,255,255,0.1);
+      border-right: 1px solid var(--chb-border);
       overflow: hidden;
     }
 
@@ -333,8 +334,8 @@ interface PdvItem {
       display: flex;
       gap: 0.5rem;
       padding: 0.75rem;
-      background: #1e293b;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
+      background: color-mix(in srgb, var(--chb-surface) 92%, var(--chb-surface-muted));
+      border-bottom: 1px solid var(--chb-border);
     }
 
     .pdv-busca-input-wrap {
@@ -343,17 +344,18 @@ interface PdvItem {
 
     .pdv-busca-input {
       width: 100%;
-      background: #0f172a;
-      border-color: rgba(255,255,255,0.15);
-      color: #f8fafc;
+      background: color-mix(in srgb, var(--chb-surface) 88%, var(--chb-surface-muted));
+      border-color: var(--chb-border-strong);
+      color: var(--chb-text);
     }
 
     .pdv-busca-input::placeholder {
-      color: rgba(248,250,252,0.4);
+      color: var(--chb-text-muted);
     }
 
     .pdv-itens {
-      overflow-y: auto;
+      min-width: 0;
+      overflow: auto;
     }
 
     .pdv-vazio {
@@ -362,7 +364,7 @@ interface PdvItem {
       align-items: center;
       justify-content: center;
       height: 100%;
-      color: rgba(248,250,252,0.4);
+      color: var(--chb-text-muted);
       gap: 0.5rem;
     }
 
@@ -379,44 +381,54 @@ interface PdvItem {
 
     .pdv-table {
       width: 100%;
+      min-width: 42rem;
       border-collapse: collapse;
-      font-size: 0.9rem;
+      font-size: 0.84rem;
     }
 
     .pdv-table th {
       padding: 0.5rem 0.75rem;
-      background: #1e293b;
-      color: rgba(248,250,252,0.5);
+      background: color-mix(in srgb, var(--chb-surface-muted) 88%, var(--chb-teal-50));
+      color: var(--chb-text-muted);
       font-size: 0.72rem;
       font-weight: 800;
       text-transform: uppercase;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
+      border-bottom: 1px solid var(--chb-border);
       position: sticky;
       top: 0;
     }
 
     .pdv-item td {
-      padding: 0.5rem 0.75rem;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
+      padding: 0.48rem 0.65rem;
+      border-bottom: 1px solid var(--chb-border);
       vertical-align: middle;
     }
 
     .pdv-item:hover {
-      background: rgba(255,255,255,0.04);
+      background: color-mix(in srgb, var(--chb-teal-50) 48%, var(--chb-surface));
       cursor: pointer;
     }
 
-    .pdv-item--selected {
-      background: rgba(245,158,11,0.08) !important;
-      border-left: 3px solid #f59e0b;
+    .pdv-item {
+      animation: pdv-row-in 140ms ease-out both;
+      transition: background-color 120ms ease, transform 120ms ease;
     }
 
-    .pdv-seq { color: rgba(248,250,252,0.4); font-size: 0.8rem; }
-    .pdv-cod { color: #f59e0b; font-weight: 700; font-size: 0.85rem; }
+    .pdv-item:hover {
+      transform: translateX(1px);
+    }
+
+    .pdv-item--selected {
+      background: color-mix(in srgb, var(--chb-yellow) 10%, var(--chb-surface)) !important;
+      border-left: 3px solid var(--chb-yellow);
+    }
+
+    .pdv-seq { color: var(--chb-text-muted); font-size: 0.8rem; }
+    .pdv-cod { color: var(--chb-yellow-700); font-weight: 700; font-size: 0.85rem; }
     .pdv-desc { max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .pdv-qtd-cell { text-align: center; }
-    .pdv-qtd-display { display: inline-block; padding: 0.2rem 0.75rem; border-radius: 0.35rem; background: rgba(255,255,255,0.08); }
-    .pdv-preco { text-align: right; color: rgba(248,250,252,0.7); font-size: 0.85rem; }
+    .pdv-qtd-display { display: inline-block; padding: 0.2rem 0.75rem; border-radius: 0.35rem; background: var(--chb-surface-muted); }
+    .pdv-preco { text-align: right; color: var(--chb-text-muted); font-size: 0.85rem; }
     .pdv-total { text-align: right; font-weight: 700; }
 
     .pdv-btn-rm {
@@ -428,29 +440,29 @@ interface PdvItem {
       border: none;
       border-radius: 0.25rem;
       background: transparent;
-      color: rgba(248,250,252,0.3);
+      color: var(--chb-text-muted);
       cursor: pointer;
       font-size: 0.65rem;
     }
 
     .pdv-btn-rm:hover {
-      background: rgba(239,68,68,0.2);
-      color: #ef4444;
+      background: color-mix(in srgb, var(--chb-red) 12%, var(--chb-surface));
+      color: var(--chb-red);
     }
 
     :host ::ng-deep .pdv-qtd-input {
       text-align: center;
-      background: #0f172a;
-      color: #f8fafc;
-      border-color: rgba(245,158,11,0.5);
+      background: var(--chb-surface);
+      color: var(--chb-text);
+      border-color: color-mix(in srgb, var(--chb-yellow) 50%, var(--chb-border));
     }
 
     .pdv-direita {
       display: flex;
       flex-direction: column;
       gap: 1rem;
-      padding: 1rem;
-      background: #1e293b;
+      padding: 0.85rem;
+      background: color-mix(in srgb, var(--chb-surface) 92%, var(--chb-surface-muted));
       overflow-y: auto;
     }
 
@@ -467,25 +479,25 @@ interface PdvItem {
     }
 
     .pdv-total-linha span {
-      color: rgba(248,250,252,0.6);
+      color: var(--chb-text-muted);
       font-weight: 600;
     }
 
     .pdv-total-geral {
       padding: 0.5rem 0;
-      border-top: 1px solid rgba(255,255,255,0.15);
+      border-top: 1px solid var(--chb-border);
       margin-top: 0.25rem;
     }
 
     .pdv-total-geral strong {
-      font-size: 1.6rem;
+      font-size: 1.35rem;
       font-weight: 900;
-      color: #f59e0b;
+      color: var(--chb-yellow-700);
     }
 
-    .pdv-total-desc strong { color: #ef4444; }
-    .valor-pago { color: #4ade80 !important; }
-    .troco-ok strong { color: #4ade80; }
+    .pdv-total-desc strong { color: var(--chb-red); }
+    .valor-pago { color: var(--chb-green) !important; }
+    .troco-ok strong { color: var(--chb-green); }
 
     .pdv-desconto-global {
       display: grid;
@@ -493,34 +505,34 @@ interface PdvItem {
     }
 
     .pdv-desconto-global label {
-      color: rgba(248,250,252,0.6);
+      color: var(--chb-text-muted);
       font-size: 0.78rem;
       font-weight: 800;
       text-transform: uppercase;
     }
 
     :host ::ng-deep .pdv-desconto-global .p-inputnumber input {
-      background: #0f172a;
-      border-color: rgba(255,255,255,0.15);
-      color: #f8fafc;
+      background: var(--chb-surface);
+      border-color: var(--chb-border-strong);
+      color: var(--chb-text);
       width: 100%;
     }
 
     .pdv-acoes {
       display: flex;
       flex-direction: column;
-      gap: 0.5rem;
+      gap: 0.45rem;
       margin-top: auto;
     }
 
     .pdv-btn-pgto {
-      border-color: rgba(255,255,255,0.2) !important;
-      color: rgba(248,250,252,0.8) !important;
+      border-color: color-mix(in srgb, var(--chb-border-strong) 80%, transparent) !important;
+      color: var(--chb-text) !important;
     }
 
     .pdv-btn-finalizar {
-      background: #f59e0b !important;
-      border-color: #f59e0b !important;
+      background: var(--chb-yellow) !important;
+      border-color: var(--chb-yellow) !important;
       color: #111827 !important;
       font-weight: 700 !important;
     }
@@ -529,16 +541,16 @@ interface PdvItem {
       display: flex;
       align-items: center;
       gap: 1.25rem;
-      padding: 0.45rem 1rem;
-      background: #0f172a;
-      border-top: 1px solid rgba(255,255,255,0.08);
+      padding: 0.42rem 0.8rem;
+      background: color-mix(in srgb, var(--chb-surface) 92%, var(--chb-surface-muted));
+      border-top: 1px solid var(--chb-border);
       font-size: 0.78rem;
-      color: rgba(248,250,252,0.5);
+      color: var(--chb-text-muted);
       flex-wrap: wrap;
     }
 
     .pdv-footer strong {
-      color: #f59e0b;
+      color: var(--chb-yellow-700);
     }
 
     .pdv-footer-info {
@@ -551,7 +563,40 @@ interface PdvItem {
         grid-template-rows: 1fr auto;
       }
       .pdv-direita {
-        border-top: 1px solid rgba(255,255,255,0.1);
+        border-top: 1px solid var(--chb-border);
+      }
+    }
+
+    @media (max-width: 520px) {
+      .pdv-shell {
+        height: calc(100vh - 6rem);
+        border-radius: 0.45rem;
+      }
+
+      .pdv-header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .pdv-header-right {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .pdv-footer {
+        gap: 0.65rem;
+      }
+    }
+
+    @keyframes pdv-row-in {
+      from {
+        opacity: 0;
+        transform: translateX(-4px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0);
       }
     }
   `],

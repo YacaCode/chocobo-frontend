@@ -1,6 +1,6 @@
 # Chocobo Frontend
 
-Frontend Angular do ERP Chocobo, iniciado para a tarefa F0-002 do PRD.
+Frontend Angular do Chocobo, iniciado para a tarefa F0-002 do PRD.
 
 ## Fontes de verdade
 
@@ -23,7 +23,20 @@ npm install
 npm run start
 ```
 
-A aplicacao sobe em `http://localhost:4200` e a rota principal redireciona para `/health`.
+A aplicacao sobe em `http://localhost:4200`. A rota principal redireciona para `/dashboard`, protegido por login e selecao de loja. Use o demo local:
+
+- usuario: `admin`
+- senha: `Admin@123`
+
+`/health` permanece publico para monitoramento.
+
+## Rodar desktop
+
+```bash
+npm run electron:dev
+```
+
+Esse comando inicia o Angular, detecta a porta local disponivel e abre o Electron apontando para o servidor dev.
 
 ## Gerar cliente da API
 

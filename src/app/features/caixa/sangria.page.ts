@@ -39,7 +39,7 @@ const TIPOS = [
 
         <div class="sangria-form">
           <label>
-            <span>Tipo de Operacao</span>
+            <span>Tipo de Operação</span>
             <p-dropdown
               [(ngModel)]="tipo"
               [options]="tipos"

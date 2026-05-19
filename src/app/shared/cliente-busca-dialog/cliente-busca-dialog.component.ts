@@ -45,7 +45,7 @@ const DEMO_CLIENTES: ClienteItem[] = [
       [(visible)]="visible"
       [modal]="true"
       [closable]="true"
-      [style]="{ width: '80vw', 'max-height': '80vh' }"
+      [style]="{ width: 'min(96vw, 62rem)', 'max-height': '84vh' }"
       [contentStyle]="{ padding: '0' }"
       header="Buscar Cliente (F4)"
       (onHide)="onDialogHide()">
@@ -127,8 +127,8 @@ const DEMO_CLIENTES: ClienteItem[] = [
     .busca-header {
       display: flex;
       align-items: center;
-      gap: 1rem;
-      padding: 1rem;
+      gap: 0.75rem;
+      padding: 0.85rem;
       border-bottom: 1px solid var(--chb-border);
       flex-wrap: wrap;
     }
@@ -145,6 +145,9 @@ const DEMO_CLIENTES: ClienteItem[] = [
     .busca-hint {
       color: var(--chb-text-muted);
       font-size: 0.78rem;
+      border-radius: 999px;
+      background: var(--chb-surface-muted);
+      padding: 0.25rem 0.55rem;
     }
 
     .row-atraso {
@@ -152,8 +155,16 @@ const DEMO_CLIENTES: ClienteItem[] = [
     }
 
     :host ::ng-deep .p-datatable .p-datatable-tbody > tr:hover {
-      background: var(--chb-yellow-50);
+      background: var(--chb-teal-50);
       cursor: pointer;
+    }
+
+    @media (max-width: 640px) {
+      .busca-input-wrap,
+      .busca-hint {
+        width: 100%;
+        min-width: 0;
+      }
     }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -260,11 +271,14 @@ function normalizeClientes(response: unknown): ClienteItem[] {
   return (arr as Record<string, unknown>[]).map((r) => ({
     id: String(r['id'] ?? r['codigo'] ?? ''),
     codigo: String(r['codigo'] ?? ''),
-    razaoSocial: String(r['razaoSocial'] ?? r['nome'] ?? r['name'] ?? ''),
+    // razaoSocial is the main name field in backend
+    razaoSocial: String(r['razaoSocial'] ?? r['nomeFantasia'] ?? r['nome'] ?? r['name'] ?? ''),
     documento: String(r['documento'] ?? r['cpfCnpj'] ?? r['cnpj'] ?? ''),
-    telefone: String(r['telefone'] ?? r['fone'] ?? '-'),
+    telefone: String(r['telefone'] ?? r['celular'] ?? r['fone'] ?? '-'),
     cidade: String(r['cidade'] ?? r['municipio'] ?? '-'),
-    limite: Number(r['limite'] ?? r['limiteCredito'] ?? 0),
-    status: String(r['status'] ?? 'Regular')
+    // limiteCredito is the backend field name
+    limite: Number(r['limiteCredito'] ?? r['limite'] ?? 0),
+    // ativo is boolean in backend; no string status field
+    status: r['ativo'] === false ? 'Inativo' : 'Regular'
   }));
 }

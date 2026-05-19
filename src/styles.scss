@@ -21,12 +21,24 @@
   box-sizing: border-box;
 }
 
+html {
+  min-width: 320px;
+  overflow-x: hidden;
+}
+
 body {
   min-width: 320px;
   min-height: 100vh;
   margin: 0;
-  background: var(--chb-page-bg);
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--chb-text) 3%, transparent) 1px, transparent 1px),
+    linear-gradient(180deg, color-mix(in srgb, var(--chb-text) 3%, transparent) 1px, transparent 1px),
+    linear-gradient(135deg, var(--chb-page-bg), color-mix(in srgb, var(--chb-page-bg) 88%, var(--chb-teal-50)));
+  background-size: 42px 42px, 42px 42px, auto;
   color: var(--chb-text);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 a {
@@ -39,4 +51,260 @@ input,
 textarea,
 select {
   font: inherit;
+}
+
+button,
+a,
+input,
+textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+  background: var(--chb-yellow);
+  color: #111827;
+}
+
+@layer components {
+  .page,
+  .pv-page,
+  .saldos-page,
+  .workspace,
+  .dashboard,
+  .form-page {
+    min-width: 0;
+  }
+
+  .page-header,
+  .pv-header,
+  .saldos-header,
+  .workspace__header,
+  .form-header,
+  .table-area,
+  .pv-panel,
+  .saldos-panel,
+  .panel,
+  .kpi,
+  .tile,
+  .grupo-card,
+  .progress-bar-wrap,
+  .filtros,
+  .filtros-bar {
+    border-color: color-mix(in srgb, var(--chb-border-strong) 74%, transparent) !important;
+    border-radius: 0.75rem !important;
+    background: color-mix(in srgb, var(--chb-surface) 94%, transparent) !important;
+    box-shadow: var(--chb-shadow-soft) !important;
+  }
+
+  .page-header,
+  .pv-header,
+  .saldos-header,
+  .workspace__header,
+  .dashboard__hero,
+  .form-header {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .page-header::before,
+  .pv-header::before,
+  .saldos-header::before,
+  .workspace__header::before,
+  .dashboard__hero::before,
+  .form-header::before {
+    position: absolute;
+    inset: 0 0 auto;
+    height: 3px;
+    background: linear-gradient(90deg, var(--chb-teal), var(--chb-yellow));
+    content: '';
+  }
+
+  .table-area,
+  .pv-panel,
+  .saldos-panel,
+  .panel--table,
+  .grupo-body,
+  .content {
+    min-width: 0;
+  }
+
+  .table-area,
+  .grupo-body {
+    overflow-x: auto;
+  }
+
+  .registro-count,
+  .pv-hint,
+  .saldos-hint {
+    display: inline-flex;
+    align-items: center;
+    min-height: 1.7rem;
+    border-radius: 999px;
+    background: var(--chb-surface-muted);
+    color: var(--chb-text-muted) !important;
+    padding: 0.2rem 0.55rem;
+    font-size: 0.76rem !important;
+    font-weight: 800;
+  }
+
+  .toast-notice {
+    border-radius: 0.55rem !important;
+    box-shadow: var(--chb-shadow) !important;
+  }
+
+  .app-shell__content > * {
+    animation: chb-fade-rise 180ms ease-out both;
+  }
+
+  .page-header,
+  .pv-header,
+  .saldos-header,
+  .workspace__header,
+  .dashboard__hero,
+  .form-header {
+    animation: chb-fade-rise 180ms ease-out both;
+  }
+
+  .kpi,
+  .tile,
+  .panel,
+  .table-area,
+  .pv-panel,
+  .saldos-panel,
+  .grupo-card,
+  .store-card {
+    animation: chb-fade-rise 220ms ease-out both;
+    transition:
+      transform 160ms ease,
+      box-shadow 160ms ease,
+      border-color 160ms ease,
+      background-color 160ms ease;
+  }
+
+  .kpi:hover,
+  .tile:hover,
+  .panel:hover,
+  .grupo-card:hover,
+  .store-card:hover {
+    transform: translateY(-1px);
+    border-color: color-mix(in srgb, var(--chb-teal) 24%, var(--chb-border));
+    box-shadow: var(--chb-shadow) !important;
+  }
+
+  .p-button,
+  .sidebar__link,
+  .queue__item,
+  .work-list__item,
+  .shortcuts a,
+  .store-card button,
+  .pdv-btn-rm {
+    transition:
+      transform 140ms ease,
+      box-shadow 140ms ease,
+      background-color 140ms ease,
+      border-color 140ms ease,
+      color 140ms ease;
+  }
+
+  .p-button:hover,
+  .queue__item:hover,
+  .work-list__item:hover,
+  .shortcuts a:hover {
+    transform: translateY(-1px);
+  }
+
+  .chb-data-table .p-datatable-tbody > tr {
+    transition: background-color 120ms ease, box-shadow 120ms ease;
+  }
+
+  .chb-data-table,
+  .p-datatable,
+  .p-tabview-panels,
+  .p-dialog {
+    border-radius: 0.75rem !important;
+  }
+
+  .p-button {
+    letter-spacing: 0;
+  }
+}
+
+@keyframes chb-fade-rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (max-width: 767px) {
+  @layer components {
+    .page-actions,
+    .pv-header-actions,
+    .saldos-header-acoes,
+    .workspace__actions,
+    .form-header-actions {
+      width: 100%;
+    }
+
+    .page-actions .p-button,
+    .pv-header-actions .p-button,
+    .saldos-header-acoes .p-button,
+    .workspace__actions .p-button,
+    .form-header-actions .p-button {
+      justify-content: center;
+      width: 100%;
+    }
+  }
+}
+
+@media (max-height: 720px) and (min-width: 768px) {
+  @layer components {
+    .page,
+    .pv-page,
+    .saldos-page,
+    .workspace,
+    .dashboard,
+    .form-page {
+      gap: 0.65rem;
+    }
+
+    .page-header,
+    .pv-header,
+    .saldos-header,
+    .workspace__header,
+    .dashboard__hero,
+    .form-header,
+    .table-area,
+    .pv-panel,
+    .saldos-panel,
+    .panel,
+    .kpi,
+    .tile,
+    .grupo-card,
+    .progress-bar-wrap,
+    .filtros,
+    .filtros-bar {
+      padding-block: 0.65rem !important;
+    }
+
+    .footer {
+      padding-block: 0.45rem !important;
+    }
+  }
 }

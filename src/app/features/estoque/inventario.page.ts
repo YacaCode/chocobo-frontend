@@ -46,10 +46,13 @@ const DEMO_INVENTARIO: ItemInventario[] = [
   template: `
     <section class="page">
       <header class="page-header">
-        <div>
-          <p class="page-area">Estoque</p>
-          <h2 class="page-title">Inventario de Estoque</h2>
-          <span class="page-sub">Iniciado em {{ dataInventario }}</span>
+        <div class="page-heading">
+          <span class="page-icon" aria-hidden="true"><i class="pi pi-clipboard"></i></span>
+          <div>
+            <p class="page-area">Estoque</p>
+            <h2 class="page-title">Inventario de Estoque</h2>
+            <span class="page-sub">Iniciado em {{ dataInventario }}</span>
+          </div>
         </div>
         <div class="page-actions">
           <button pButton type="button" icon="pi pi-save" label="Aplicar Contagem" [disabled]="saving() || totalConferidos() === 0" (click)="aplicarContagem()"></button>
@@ -163,21 +166,28 @@ const DEMO_INVENTARIO: ItemInventario[] = [
     </section>
   `,
   styles: [`
-    .page { display: grid; gap: 1rem; }
+    .page { display: grid; gap: .85rem; }
 
     .page-header {
       display: flex; align-items: center; justify-content: space-between; gap: 1rem;
       background: var(--chb-surface); border: 1px solid var(--chb-border);
-      border-radius: .5rem; padding: 1.25rem;
+      border-radius: .5rem; padding: 1rem;
+      box-shadow: var(--chb-shadow-soft);
+    }
+    .page-heading { display: flex; align-items: center; gap: .75rem; min-width: 0; }
+    .page-icon {
+      display: grid; width: 2.25rem; height: 2.25rem; flex: 0 0 auto; place-items: center;
+      border-radius: .45rem; background: var(--chb-teal-50); color: var(--chb-teal);
     }
     .page-area { margin: 0; color: var(--chb-text-muted); font-size: .75rem; font-weight: 900; text-transform: uppercase; }
-    .page-title { margin: 0; color: var(--chb-text); font-size: 1.65rem; line-height: 1.15; }
+    .page-title { margin: 0; color: var(--chb-text); font-size: 1.35rem; line-height: 1.15; }
     .page-sub { color: var(--chb-text-muted); font-size: .85rem; }
     .page-actions { display: flex; gap: .75rem; }
 
     .progress-bar-wrap {
       background: var(--chb-surface); border: 1px solid var(--chb-border);
-      border-radius: .5rem; padding: 1rem;
+      border-radius: .5rem; padding: .85rem;
+      box-shadow: var(--chb-shadow-soft);
     }
     .progress-info { display: flex; justify-content: space-between; margin-bottom: .5rem; font-size: .85rem; color: var(--chb-text-muted); }
     .progress-info strong { color: var(--chb-text); }
@@ -185,27 +195,31 @@ const DEMO_INVENTARIO: ItemInventario[] = [
     .progress-fill { height: 100%; background: #22c55e; border-radius: 999px; transition: width .3s; }
 
     .filtros-bar {
-      display: flex; flex-wrap: wrap; align-items: flex-end; gap: .75rem;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr)); align-items: end; gap: .7rem;
       background: var(--chb-surface); border: 1px solid var(--chb-border);
-      border-radius: .5rem; padding: 1rem;
+      border-radius: .5rem; padding: .85rem;
+      box-shadow: var(--chb-shadow-soft);
     }
-    .filter-field { display: grid; gap: .3rem; font-size: .82rem; font-weight: 700; color: var(--chb-text); min-width: 130px; }
+    .filter-field { display: grid; gap: .3rem; font-size: .82rem; font-weight: 700; color: var(--chb-text); min-width: 0; }
     .filter-field input { width: 100%; }
-    .filter-field--wide { flex: 1; min-width: 200px; }
+    .filter-field--wide { grid-column: span 2; }
     .w-full { width: 100%; }
 
     .table-area {
       background: var(--chb-surface); border: 1px solid var(--chb-border);
       border-radius: .5rem; overflow: auto;
+      box-shadow: var(--chb-shadow-soft);
     }
 
-    .inv-table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+    .inv-table { width: 100%; min-width: 48rem; border-collapse: collapse; font-size: .84rem; }
     .inv-table th {
-      background: var(--chb-surface-muted); padding: .65rem 1rem; text-align: left;
+      background: color-mix(in srgb, var(--chb-surface-muted) 88%, var(--chb-teal-50)); padding: .55rem .7rem; text-align: left;
       font-weight: 700; border-bottom: 2px solid var(--chb-border); font-size: .82rem;
       text-transform: uppercase; color: var(--chb-text-muted);
     }
-    .inv-table td { padding: .5rem 1rem; border-bottom: 1px solid var(--chb-border); vertical-align: middle; }
+    .inv-table td { padding: .5rem .7rem; border-bottom: 1px solid var(--chb-border); vertical-align: middle; }
+    .inv-table tr { transition: background-color 120ms ease; }
+    .inv-table tbody tr:hover { background: color-mix(in srgb, var(--chb-teal-50) 52%, var(--chb-surface)); }
     .inv-table tr:last-child td { border-bottom: none; }
 
     .text-center { text-align: center; }
@@ -215,7 +229,7 @@ const DEMO_INVENTARIO: ItemInventario[] = [
 
     .qtd-input {
       width: 90px; height: 44px; text-align: center;
-      border: 2px solid var(--chb-border); border-radius: .375rem;
+      border: 1px solid var(--chb-border); border-radius: .375rem;
       font-size: 1rem; font-weight: 600; padding: .25rem .5rem;
       outline: none; background: var(--chb-surface);
       color: var(--chb-text);
@@ -246,6 +260,14 @@ const DEMO_INVENTARIO: ItemInventario[] = [
       border-radius: .5rem; font-size: .9rem; box-shadow: 0 4px 20px rgba(0,0,0,.25);
     }
     .toast-success { background: #166534; }
+
+    @media (max-width: 600px) {
+      .page-header { flex-direction: column; align-items: flex-start; }
+      .page-heading { width: 100%; }
+      .filter-field--wide { grid-column: span 1; }
+      .page-actions { width: 100%; }
+      .page-actions .p-button { width: 100%; justify-content: center; }
+    }
   `]
 })
 export class InventarioPage implements OnInit, OnDestroy {

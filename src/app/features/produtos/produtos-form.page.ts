@@ -281,15 +281,16 @@ import { TabViewModule } from 'primeng/tabview';
     </section>
   `,
   styles: [`
-    .form-page { display: grid; gap: 1rem; padding-bottom: 5rem; }
+    .form-page { display: grid; gap: .85rem; padding-bottom: 4.5rem; min-width: 0; }
 
     .form-header {
       display: flex; align-items: center; justify-content: space-between; gap: 1rem;
       background: var(--chb-surface); border: 1px solid var(--chb-border);
-      border-radius: .5rem; padding: 1.25rem;
+      border-radius: .5rem; padding: 1rem;
+      box-shadow: var(--chb-shadow-soft);
     }
     .form-area { margin: 0; color: var(--chb-text-muted); font-size: .75rem; font-weight: 900; text-transform: uppercase; }
-    .form-title { margin: 0; font-size: 1.5rem; color: var(--chb-text); }
+    .form-title { margin: 0; font-size: 1.3rem; color: var(--chb-text); }
     .form-subtitle { color: var(--chb-text-muted); font-size: .85rem; }
 
     .loading-overlay {
@@ -301,14 +302,16 @@ import { TabViewModule } from 'primeng/tabview';
     .form-body {
       background: var(--chb-surface); border: 1px solid var(--chb-border);
       border-radius: .5rem;
+      box-shadow: var(--chb-shadow-soft);
+      min-width: 0;
     }
 
-    .tab-content { display: grid; gap: 1.5rem; padding: 1.5rem 0 1rem; }
+    .tab-content { display: grid; gap: 1rem; padding: 1rem 0 .75rem; }
 
     .fieldset { border: 1px solid var(--chb-border); border-radius: .5rem; padding: 1rem; margin: 0; }
     .fieldset legend { padding: 0 .5rem; font-size: .85rem; font-weight: 700; color: var(--chb-text-muted); }
 
-    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .85rem; }
     .grid-span-2 { grid-column: span 2; }
 
     .field { display: grid; gap: .35rem; font-size: .86rem; font-weight: 700; color: var(--chb-text); }
@@ -328,7 +331,8 @@ import { TabViewModule } from 'primeng/tabview';
       position: sticky; bottom: 0; z-index: 10;
       display: flex; justify-content: flex-end; gap: .75rem;
       background: var(--chb-surface); border-top: 1px solid var(--chb-border);
-      padding: 1rem 1.5rem;
+      padding: .75rem 1rem;
+      flex-wrap: wrap;
     }
 
     .toast-notice {
@@ -341,6 +345,9 @@ import { TabViewModule } from 'primeng/tabview';
     @media (max-width: 768px) {
       .grid-3 { grid-template-columns: 1fr; }
       .grid-span-2 { grid-column: span 1; }
+      .form-header,
+      .form-footer { align-items: stretch; flex-direction: column; }
+      .form-footer .p-button { width: 100%; justify-content: center; }
     }
   `]
 })

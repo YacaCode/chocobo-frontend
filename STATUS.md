@@ -128,3 +128,148 @@ Status: implementado localmente em 2026-05-18.
 
 - `npm run lint`: verde em 2026-05-18.
 - `npm run build`: verde em 2026-05-18 (warnings de budget CSS em 2 componentes, nao sao erros).
+
+## F2-008 a F3-008 [FE] Cadastros e Estoque - Ralph Loop Agente Cadastros (2026-05-18)
+
+Status: implementado em 2026-05-18.
+
+### Validador compartilhado:
+
+- `src/app/shared/validators/cpf-cnpj.validator.ts`
+  - Validacao de CPF e CNPJ por algoritmo
+  - ValidatorFn para uso em ReactiveFormsModule
+  - Funcoes de mascara para CPF, CNPJ e telefone
+
+### F2-008 Lista de Clientes:
+
+- `src/app/features/clientes/clientes-list.page.ts`
+  - p-table com colunas: codigo, razao social, documento, telefone, cidade/UF, status
+  - Status coloridos (Ativo=verde, VIP=azul, Inadimplente=amarelo, Inativo=cinza)
+  - Filtros laterais: tipo PF/PJ, status, cidade; busca com debounce 400ms
+  - KPI cards: Total, Ativos, Inadimplentes, VIP
+  - Ctrl+N para novo cliente; click/dblclick navega para formulario
+  - Fallback DEMO_CLIENTES com 10 registros variados
+
+### F2-009 Formulario de Cliente:
+
+- `src/app/features/clientes/clientes-form.page.ts`
+  - 4 abas: Cadastro, Dados Adicionais, Contatos, Perfil
+  - Alternancia PF/PJ com validacao de CPF ou CNPJ
+  - Busca de CEP via ViaCEP com auto-preenchimento de endereco
+  - Mascaras de CPF, CNPJ, telefone e CEP
+  - Dialog para registrar historico de contatos
+  - Footer sticky com Cancelar, Salvar e Novo, Salvar
+  - Salva em POST /api/v1/cadastros/clientes ou PUT /id com fallback demo
+
+### F2-010 Lista de Produtos:
+
+- `src/app/features/produtos/produtos-list.page.ts`
+  - Filtros horizontais (codigo, descricao, fabricante, secao, ref fabricante, NCM)
+  - Toggle "Somente ativos" e "Exibir fotos" (miniatura placeholder)
+  - Produtos em promocao destacados em azul
+  - Normalizacao de codigo (ignora pontuacao na busca)
+  - KPI cards: Total, Ativos, Em Promocao, Abaixo Minimo
+  - Fallback DEMO_PRODUTOS com 12 pecas de moto
+
+### F2-011 Formulario de Produto:
+
+- `src/app/features/produtos/produtos-form.page.ts`
+  - 3 abas: Dados Principais, Precos, Tributacao
+  - Datalist nativo para fabricantes e secoes comuns (autocomplete)
+  - Calculo de markup: custo, frete, IPI, ICMS-ST, outros, lucro -> preco sugerido
+  - Chama /api/v1/catalogo/produtos/calcular-preco com fallback local
+  - NCM vinculado entre aba 1 e aba 3 (readonly na tributacao)
+  - Salva em POST /api/v1/cadastros/produtos com fallback demo
+
+### F3-007 Inventario de Estoque:
+
+- `src/app/features/estoque/inventario.page.ts`
+  - Tabela de contagem com inputs numericos grandes (44px, tablet-friendly)
+  - Diferenca calculada em tempo real: verde=bate, amarelo<=5%, vermelho>5%
+  - Progress bar de itens conferidos vs total
+  - Filtros por secao, busca e "mostrar" (todos/pendentes/conferidos/divergentes)
+  - "Aplicar Contagem" envia batch para /api/v1/estoque/inventario/ajustar
+
+### F3-008 Necessidade de Compra:
+
+- `src/app/features/estoque/necessidade-compra.page.ts`
+  - Agrupado por fabricante com accordion colapsavel
+  - Total estimado por fornecedor e geral (calculado em tempo real)
+  - Qtd Sugerida editavel por item
+  - "Gerar Pedido de Compra" com toast de confirmacao
+  - Carrega de GET /api/v1/estoque/necessidade-compra com fallback demo
+
+### Rotas atualizadas:
+
+- `src/app/app.routes.ts` atualizado:
+  - /cadastros/clientes -> ClientesListPage
+  - /cadastros/clientes/novo -> ClientesFormPage
+  - /cadastros/clientes/:id -> ClientesFormPage
+  - /cadastros/produtos -> ProdutosListPage
+  - /cadastros/produtos/novo -> ProdutosFormPage
+  - /cadastros/produtos/:id -> ProdutosFormPage
+  - /estoque/inventarios -> InventarioPage
+  - /estoque/necessidade-compra -> NecessidadeCompraPage
+
+### Correcoes de compatibilidade:
+
+- `src/app/shared/cliente-busca-dialog/cliente-busca-dialog.component.ts`
+  - Corrigido $event.data com $any() para compatibilidade PrimeNG 17
+- `src/app/shared/produto-busca-dialog/produto-busca-dialog.component.ts`
+  - Corrigido $event.data com $any() para compatibilidade PrimeNG 17
+
+### Validacao F2/F3:
+
+- `npm run build`: verde em 2026-05-18 (zero erros TypeScript, apenas warnings de budget CSS nos componentes do outro agente).
+
+## Backend Full-Stack Verification (2026-05-19)
+
+Status: sistema completo e rodando.
+
+### Correccoes aplicadas no backend:
+
+1. `RefreshToken.java`: removido `columnDefinition = "inet"` (incompativel com H2)
+2. `BaseEntity.java`: `version` inicializado com `0L` para suportar `saveAll` com IDs fixos
+3. `JpaAuditingConfig.java`: adicionado `DateTimeProvider` retornando `OffsetDateTime` (necessario para @CreatedDate/@LastModifiedDate)
+4. `TenantInterceptor.java`: perfil mudado para `!test & !dev-local` (evita chamada PostgreSQL-especifica `set_config` no H2)
+5. `DemoAuthService.java` + `DemoCoreUserService.java`: perfil mudado para `{"test", "dev-local"}` (usa auth demo no H2)
+6. `JpaAuthService.java` + `JpaCoreUserService.java`: perfil mudado para `!test & !dev-local`
+7. Todos os services de bounded context (`ProdutoService`, `ClienteService`, `PreVendaService`, `CaixaService`, `EstoqueService`, `DavOsService`): adicionado `@Profile("!test")` para nao quebrar o perfil de testes que exclui JPA
+
+### Estado do sistema:
+
+- Backend rodando na porta 8080 com perfil `dev-local` (H2 in-memory)
+- Frontend rodando na porta 4200 com proxy para backend
+- Login: `admin` / `Admin@123`
+- 47/47 testes backend passando
+- 1/1 testes frontend passando
+- 1/1 e2e Playwright passando
+- Build Angular OK (apenas 2 warnings de budget CSS pre-existentes)
+
+### APIs funcionando (todas retornam 200):
+
+- GET /api/v1/health
+- GET /api/v1/dashboard
+- GET /api/v1/cadastros/produtos (15 registros)
+- GET /api/v1/cadastros/clientes (10 registros)
+- GET /api/v1/cadastros/fornecedores
+- GET /api/v1/cadastros/auxiliares
+- GET /api/v1/estoque/saldos (14 registros)
+- GET /api/v1/estoque/necessidade-compra
+- GET /api/v1/vendas/pre-vendas (5 registros seed + criados)
+- GET /api/v1/vendas/formas-pagamento (7 ativas)
+- GET /api/v1/caixa/sessoes
+- GET /api/v1/financeiro/contas-receber
+- GET /api/v1/financeiro/contas-pagar
+- GET /api/v1/financeiro/fluxo
+- GET /api/v1/compras/pedidos
+- GET /api/v1/servicos/dav-os (5 registros)
+- GET /api/v1/fiscal/documentos
+- POST /api/v1/auth/login
+
+### Operacoes de escrita verificadas:
+
+- Criar pre-venda com auto-numeracao
+- Adicionar item a pre-venda
+- Avancar status: ABERTA -> SEPARADA
+- Abrir sessao de caixa (ABERTO)

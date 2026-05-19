@@ -8,6 +8,7 @@ export default defineConfig({
   },
   use: {
     baseURL: 'http://127.0.0.1:4200',
+    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) ChocoboShell/1.0 Electron/32.0.0 Safari/537.36',
     trace: 'on-first-retry'
   },
   webServer: {
@@ -19,7 +20,10 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] }
+      use: {
+        ...devices['Desktop Chrome'],
+        userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) ChocoboShell/1.0 Electron/32.0.0 Safari/537.36'
+      }
     }
   ]
 });

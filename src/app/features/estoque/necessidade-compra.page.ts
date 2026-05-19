@@ -62,10 +62,13 @@ function agruparPorFabricante(itens: ItemNecessidade[]): GrupoFabricante[] {
   template: `
     <section class="page">
       <header class="page-header">
-        <div>
-          <p class="page-area">Estoque</p>
-          <h2 class="page-title">Necessidade de Compra</h2>
-          <span class="page-sub">Produtos abaixo do estoque minimo</span>
+        <div class="page-heading">
+          <span class="page-icon" aria-hidden="true"><i class="pi pi-shopping-cart"></i></span>
+          <div>
+            <p class="page-area">Estoque</p>
+            <h2 class="page-title">Necessidade de Compra</h2>
+            <span class="page-sub">Produtos abaixo do estoque minimo</span>
+          </div>
         </div>
         <div class="page-actions">
           <div class="total-estimado">
@@ -160,22 +163,28 @@ function agruparPorFabricante(itens: ItemNecessidade[]): GrupoFabricante[] {
     </section>
   `,
   styles: [`
-    .page { display: grid; gap: 1rem; }
+    .page { display: grid; gap: .85rem; }
 
     .page-header {
       display: flex; align-items: center; justify-content: space-between; gap: 1rem;
       background: var(--chb-surface); border: 1px solid var(--chb-border);
-      border-radius: .5rem; padding: 1.25rem;
+      border-radius: .5rem; padding: 1rem;
+      box-shadow: var(--chb-shadow-soft);
+    }
+    .page-heading { display: flex; align-items: center; gap: .75rem; min-width: 0; }
+    .page-icon {
+      display: grid; width: 2.25rem; height: 2.25rem; flex: 0 0 auto; place-items: center;
+      border-radius: .45rem; background: var(--chb-teal-50); color: var(--chb-teal);
     }
     .page-area { margin: 0; color: var(--chb-text-muted); font-size: .75rem; font-weight: 900; text-transform: uppercase; }
-    .page-title { margin: 0; color: var(--chb-text); font-size: 1.65rem; line-height: 1.15; }
+    .page-title { margin: 0; color: var(--chb-text); font-size: 1.35rem; line-height: 1.15; }
     .page-sub { color: var(--chb-text-muted); font-size: .85rem; }
     .page-actions { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; justify-content: flex-end; }
 
     .total-estimado {
-      font-size: 1rem; color: var(--chb-text-muted);
+      font-size: .88rem; color: var(--chb-text-muted);
     }
-    .total-estimado strong { color: var(--chb-navy); font-size: 1.25rem; }
+    .total-estimado strong { color: var(--chb-teal); font-size: 1.05rem; }
 
     .loading-overlay {
       display: flex; align-items: center; justify-content: center; gap: 1rem;
@@ -187,6 +196,7 @@ function agruparPorFabricante(itens: ItemNecessidade[]): GrupoFabricante[] {
       text-align: center; padding: 3rem;
       background: var(--chb-surface); border: 1px solid var(--chb-border);
       border-radius: .5rem; color: var(--chb-text-muted);
+      box-shadow: var(--chb-shadow-soft);
     }
     .empty-global i { font-size: 3rem; color: #22c55e; display: block; margin-bottom: 1rem; }
     .empty-global p { font-size: 1.1rem; margin: 0 0 .5rem; color: var(--chb-text); }
@@ -194,11 +204,12 @@ function agruparPorFabricante(itens: ItemNecessidade[]): GrupoFabricante[] {
     .grupo-card {
       background: var(--chb-surface); border: 1px solid var(--chb-border);
       border-radius: .5rem; overflow: hidden;
+      box-shadow: var(--chb-shadow-soft);
     }
 
     .grupo-header {
       display: flex; align-items: center; justify-content: space-between;
-      width: 100%; padding: 1rem 1.25rem;
+      width: 100%; padding: .85rem 1rem;
       background: var(--chb-surface-muted); border: none;
       cursor: pointer; color: inherit;
       border-bottom: 1px solid var(--chb-border);
@@ -213,13 +224,15 @@ function agruparPorFabricante(itens: ItemNecessidade[]): GrupoFabricante[] {
 
     .grupo-body { overflow-x: auto; }
 
-    .nec-table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+    .nec-table { width: 100%; min-width: 44rem; border-collapse: collapse; font-size: .84rem; }
     .nec-table th {
-      background: var(--chb-surface-muted); padding: .6rem 1rem; text-align: left;
+      background: color-mix(in srgb, var(--chb-surface-muted) 88%, var(--chb-teal-50)); padding: .55rem .7rem; text-align: left;
       font-weight: 700; border-bottom: 1px solid var(--chb-border);
       font-size: .8rem; text-transform: uppercase; color: var(--chb-text-muted);
     }
-    .nec-table td { padding: .6rem 1rem; border-bottom: 1px solid var(--chb-border); vertical-align: middle; }
+    .nec-table td { padding: .5rem .7rem; border-bottom: 1px solid var(--chb-border); vertical-align: middle; }
+    .nec-table tbody tr { transition: background-color 120ms ease; }
+    .nec-table tbody tr:hover { background: color-mix(in srgb, var(--chb-teal-50) 52%, var(--chb-surface)); }
     .nec-table tfoot td { border-top: 2px solid var(--chb-border); border-bottom: none; }
 
     .text-center { text-align: center; }
@@ -234,7 +247,7 @@ function agruparPorFabricante(itens: ItemNecessidade[]): GrupoFabricante[] {
 
     .qtd-input {
       width: 80px; height: 36px; text-align: center;
-      border: 2px solid var(--chb-border); border-radius: .375rem;
+      border: 1px solid var(--chb-border); border-radius: .375rem;
       font-size: .95rem; font-weight: 600; padding: .25rem .5rem;
       outline: none; background: var(--chb-surface); color: var(--chb-text);
     }
@@ -244,6 +257,24 @@ function agruparPorFabricante(itens: ItemNecessidade[]): GrupoFabricante[] {
       position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 9999;
       background: #166534; color: #fff; padding: .75rem 1.25rem;
       border-radius: .5rem; font-size: .9rem; box-shadow: 0 4px 20px rgba(0,0,0,.25);
+    }
+
+    @media (max-width: 700px) {
+      .page-header,
+      .grupo-header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .page-heading,
+      .page-actions {
+        width: 100%;
+      }
+
+      .page-actions .p-button {
+        width: 100%;
+        justify-content: center;
+      }
     }
   `]
 })
@@ -271,15 +302,40 @@ export class NecessidadeCompraPage implements OnInit, OnDestroy {
 
   carregar(): void {
     this.loading.set(true);
+    // Falls back to estoque/saldos filtered to below-minimum items if dedicated endpoint absent
     this.http.get<unknown>('/api/v1/estoque/necessidade-compra').pipe(
-      catchError(() => of(DEMO_NECESSIDADE)),
+      catchError(() => this.http.get<unknown>('/api/v1/estoque/saldos').pipe(
+        catchError(() => of(DEMO_NECESSIDADE))
+      )),
       finalize(() => this.loading.set(false))
     ).subscribe(resp => {
-      const list = Array.isArray(resp) ? (resp as ItemNecessidade[]) : DEMO_NECESSIDADE;
+      const list = this.normalizar(resp);
       const itens = list.length ? list : DEMO_NECESSIDADE;
       this.itens.set(itens);
       this.grupos.set(agruparPorFabricante(itens));
     });
+  }
+
+  private normalizar(resp: unknown): ItemNecessidade[] {
+    const arr = Array.isArray(resp) ? resp
+      : (typeof resp === 'object' && resp !== null)
+        ? ((resp as Record<string, unknown>)['content'] as unknown[] ??
+           (resp as Record<string, unknown>)['items'] as unknown[] ??
+           (resp as Record<string, unknown>)['data'] as unknown[] ?? [])
+        : [];
+
+    return (arr as Record<string, unknown>[]).map(r => ({
+      id: String(r['id'] ?? ''),
+      // codigoProduto and descricaoProduto are the backend field names for estoque records
+      codigo: String(r['codigoProduto'] ?? r['codigo'] ?? ''),
+      descricao: String(r['descricaoProduto'] ?? r['descricao'] ?? ''),
+      fabricante: String(r['fabricante'] ?? ''),
+      // qtdAtual is the real quantity; qtdDisponivel is computed
+      qtdAtual: Number(r['qtdAtual'] ?? r['qtdDisponivel'] ?? r['qtdAtual'] ?? 0),
+      qtdMinima: Number(r['qtdMinima'] ?? r['minimo'] ?? 0),
+      qtdSugerida: Math.max(0, Number(r['qtdMinima'] ?? r['minimo'] ?? 0) * 2 - Number(r['qtdAtual'] ?? r['qtdDisponivel'] ?? 0)),
+      precoUnitario: Number(r['precoUnitario'] ?? r['preco'] ?? 0)
+    }));
   }
 
   totalGrupo(grupo: GrupoFabricante): number {

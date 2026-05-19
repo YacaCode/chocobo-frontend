@@ -28,7 +28,7 @@ import { MessageService } from 'primeng/api';
           <i class="pi pi-lock-open" aria-hidden="true"></i>
         </div>
         <h2>Abertura de Caixa</h2>
-        <p>Informe o saldo inicial em dinheiro para iniciar o turno de operacao.</p>
+        <p>Informe o saldo inicial em dinheiro para iniciar o turno de operação.</p>
 
         <div class="abrir-form">
           <label>

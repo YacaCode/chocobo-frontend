@@ -51,9 +51,12 @@ const DEMO_CLIENTES: Cliente[] = [
   template: `
     <section class="page">
       <header class="page-header">
-        <div>
-          <p class="page-area">Cadastros</p>
-          <h2 class="page-title">Clientes e Fornecedores</h2>
+        <div class="page-heading">
+          <span class="page-icon" aria-hidden="true"><i class="pi pi-id-card"></i></span>
+          <div>
+            <p class="page-area">Cadastros</p>
+            <h2 class="page-title">Clientes e Fornecedores</h2>
+          </div>
         </div>
         <div class="page-actions">
           <button pButton type="button" icon="pi pi-upload" label="Importar" class="p-button-outlined" (click)="toast('Importacao em desenvolvimento')"></button>
@@ -202,28 +205,33 @@ const DEMO_CLIENTES: Cliente[] = [
     </section>
   `,
   styles: [`
-    .page { display: grid; gap: 1rem; }
+    .page { display: grid; gap: .85rem; }
 
     .page-header {
       display: flex; align-items: center; justify-content: space-between; gap: 1rem;
       background: var(--chb-surface); border: 1px solid var(--chb-border);
-      border-radius: .5rem; padding: 1.25rem;
-      box-shadow: 0 10px 28px rgba(15,23,42,.06);
+      border-radius: .5rem; padding: 1rem;
+      box-shadow: var(--chb-shadow-soft);
+    }
+    .page-heading { display: flex; align-items: center; gap: .75rem; min-width: 0; }
+    .page-icon {
+      display: grid; width: 2.25rem; height: 2.25rem; flex: 0 0 auto; place-items: center;
+      border-radius: .45rem; background: var(--chb-teal-50); color: var(--chb-teal);
     }
     .page-area { margin: 0; color: var(--chb-text-muted); font-size: .75rem; font-weight: 900; text-transform: uppercase; }
-    .page-title { margin: 0; color: var(--chb-text); font-size: 1.65rem; line-height: 1.15; }
-    .page-actions { display: flex; gap: .75rem; flex-wrap: wrap; }
+    .page-title { margin: 0; color: var(--chb-text); font-size: 1.35rem; line-height: 1.15; }
+    .page-actions { display: flex; gap: .6rem; flex-wrap: wrap; justify-content: flex-end; }
 
     .kpis {
-      display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem;
+      display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .85rem;
     }
     .kpi {
-      display: flex; align-items: center; gap: .9rem; padding: 1rem;
+      display: flex; align-items: center; gap: .7rem; padding: .8rem;
       background: var(--chb-surface); border: 1px solid var(--chb-border);
-      border-radius: .5rem; box-shadow: 0 10px 28px rgba(15,23,42,.06);
+      border-radius: .5rem; box-shadow: var(--chb-shadow-soft);
     }
     .kpi i {
-      display: grid; width: 2.6rem; height: 2.6rem; flex: 0 0 auto;
+      display: grid; width: 2.25rem; height: 2.25rem; flex: 0 0 auto;
       place-items: center; border-radius: .5rem; font-size: 1.15rem;
     }
     .kpi--info i { background: var(--chb-navy-50); color: var(--chb-navy); }
@@ -231,16 +239,16 @@ const DEMO_CLIENTES: Cliente[] = [
     .kpi--warning i { background: var(--chb-yellow-50); color: var(--chb-yellow-700); }
     .kpi--primary i { background: #ede9fe; color: #5b21b6; }
     .kpi span { display: block; color: var(--chb-text-muted); font-size: .78rem; font-weight: 800; }
-    .kpi strong { display: block; margin: .15rem 0; color: var(--chb-text); font-size: 1.35rem; }
+    .kpi strong { display: block; margin: .15rem 0; color: var(--chb-text); font-size: 1.12rem; }
     .kpi small { display: block; color: var(--chb-text-muted); font-size: .78rem; }
 
     .content {
-      display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 1rem; align-items: start;
+      display: grid; grid-template-columns: 16rem minmax(0, 1fr); gap: .85rem; align-items: start;
     }
     .filtros {
-      display: grid; gap: .75rem; padding: 1rem;
+      display: grid; gap: .65rem; padding: .85rem;
       background: var(--chb-surface); border: 1px solid var(--chb-border);
-      border-radius: .5rem; box-shadow: 0 10px 28px rgba(15,23,42,.06);
+      border-radius: .5rem; box-shadow: var(--chb-shadow-soft);
     }
     .filtros-title { margin: 0; color: var(--chb-text); font-size: 1rem; font-weight: 700; }
     .field { display: grid; gap: .35rem; color: var(--chb-text); font-size: .86rem; font-weight: 700; }
@@ -249,7 +257,8 @@ const DEMO_CLIENTES: Cliente[] = [
     .table-area {
       display: grid; gap: .75rem;
       background: var(--chb-surface); border: 1px solid var(--chb-border);
-      border-radius: .5rem; padding: 1rem; box-shadow: 0 10px 28px rgba(15,23,42,.06);
+      border-radius: .5rem; padding: .85rem; box-shadow: var(--chb-shadow-soft);
+      min-width: 0;
     }
     .table-toolbar { display: flex; align-items: center; justify-content: space-between; }
     .registro-count { color: var(--chb-text-muted); font-size: .85rem; }
@@ -268,6 +277,7 @@ const DEMO_CLIENTES: Cliente[] = [
     @media (max-width: 600px) {
       .kpis { grid-template-columns: 1fr; }
       .page-header { flex-direction: column; align-items: flex-start; }
+      .page-heading { width: 100%; }
     }
   `]
 })
@@ -413,16 +423,31 @@ export class ClientesListPage implements OnInit, OnDestroy {
            (resp as Record<string, unknown>)['items'] as unknown[] ??
            (resp as Record<string, unknown>)['data'] as unknown[] ?? [])
         : [];
-    return (arr as Record<string, unknown>[]).map(r => ({
-      id: String(r['id'] ?? r['codigo'] ?? ''),
-      codigo: Number(r['codigo'] ?? 0),
-      razaoSocial: String(r['razaoSocial'] ?? r['nome'] ?? r['name'] ?? ''),
-      documento: String(r['documento'] ?? r['cpfCnpj'] ?? r['cnpj'] ?? ''),
-      tipo: (r['tipo'] === 'PJ' ? 'PJ' : 'PF') as 'PF' | 'PJ',
-      status: String(r['status'] ?? 'Ativo') as Cliente['status'],
-      cidade: String(r['cidade'] ?? r['municipio'] ?? '-'),
-      uf: String(r['uf'] ?? r['estado'] ?? '-'),
-      telefone: r['telefone'] ? String(r['telefone']) : undefined
-    }));
+    return (arr as Record<string, unknown>[]).map(r => {
+      // ativo is boolean in backend; classificacao carries VIP/Inadimplente
+      const classificacao = String(r['classificacao'] ?? '');
+      let status: Cliente['status'];
+      if (r['ativo'] === false) {
+        status = 'Inativo';
+      } else if (classificacao === 'VIP') {
+        status = 'VIP';
+      } else if (classificacao === 'Inadimplente') {
+        status = 'Inadimplente';
+      } else {
+        status = 'Ativo';
+      }
+      return {
+        id: String(r['id'] ?? r['codigo'] ?? ''),
+        codigo: Number(r['codigo'] ?? 0),
+        // razaoSocial is main name field
+        razaoSocial: String(r['razaoSocial'] ?? r['nomeFantasia'] ?? r['nome'] ?? r['name'] ?? ''),
+        documento: String(r['documento'] ?? r['cpfCnpj'] ?? r['cnpj'] ?? ''),
+        tipo: (r['tipo'] === 'PJ' ? 'PJ' : 'PF') as 'PF' | 'PJ',
+        status,
+        cidade: String(r['cidade'] ?? r['municipio'] ?? '-'),
+        uf: String(r['uf'] ?? r['estado'] ?? '-'),
+        telefone: r['telefone'] ? String(r['telefone']) : (r['celular'] ? String(r['celular']) : undefined)
+      };
+    });
   }
 }

@@ -14,6 +14,7 @@ import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { InputNumberModule } from 'primeng/inputnumber';
+import { InputTextModule } from 'primeng/inputtext';
 import { DropdownModule } from 'primeng/dropdown';
 import { TagModule } from 'primeng/tag';
 
@@ -65,13 +66,13 @@ interface FormaPagamentoRow {
 @Component({
   selector: 'chb-forma-pagamento-dialog',
   standalone: true,
-  imports: [ButtonModule, CurrencyPipe, DialogModule, DropdownModule, FormsModule, InputNumberModule, NgClass, TagModule],
+  imports: [ButtonModule, CurrencyPipe, DialogModule, DropdownModule, FormsModule, InputNumberModule, InputTextModule, NgClass, TagModule],
   template: `
     <p-dialog
       [(visible)]="visible"
       [modal]="true"
       [closable]="true"
-      [style]="{ width: '560px' }"
+      [style]="{ width: 'min(96vw, 35rem)' }"
       header="Formas de Pagamento"
       (onHide)="onDialogHide()">
 
@@ -157,14 +158,14 @@ interface FormaPagamentoRow {
     .pgto-container {
       display: flex;
       flex-direction: column;
-      gap: 1rem;
+      gap: 0.85rem;
       padding: 0.25rem 0;
     }
 
     .pgto-totais {
       display: grid;
       gap: 0.5rem;
-      padding: 1rem;
+      padding: 0.85rem;
       border: 1px solid var(--chb-border);
       border-radius: 0.5rem;
       background: var(--chb-surface-muted);
@@ -207,19 +208,25 @@ interface FormaPagamentoRow {
       border: 1px solid var(--chb-border);
       border-radius: 0.5rem;
       background: var(--chb-surface);
-      transition: border-color 0.15s;
+      transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
     }
 
     .pgto-forma--ativa {
-      border-color: var(--chb-yellow);
+      border-color: var(--chb-teal);
+      box-shadow: 0 0 0 1px color-mix(in srgb, var(--chb-teal) 18%, transparent);
+    }
+
+    .pgto-forma:hover {
+      transform: translateY(-1px);
+      box-shadow: var(--chb-shadow-soft);
     }
 
     .pgto-forma-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 1rem;
-      padding: 0.75rem 1rem;
+      gap: 0.75rem;
+      padding: 0.7rem 0.85rem;
       cursor: pointer;
     }
 
@@ -249,6 +256,19 @@ interface FormaPagamentoRow {
     :host ::ng-deep .pgto-valor-input {
       width: 130px;
       text-align: right;
+    }
+
+    @media (max-width: 520px) {
+      .pgto-forma-header,
+      .pgto-extras {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .pgto-forma-valor-wrap,
+      :host ::ng-deep .pgto-valor-input {
+        width: 100%;
+      }
     }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush
