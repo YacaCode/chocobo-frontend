@@ -83,6 +83,13 @@ const navGroups: NavGroup[] = [
     items: [
       { label: 'Documentos', route: '/fiscal/documentos', icon: 'pi pi-file' }
     ]
+  },
+  {
+    label: 'Gerencial',
+    items: [
+      { label: 'DRE', route: '/gerencial/dre', icon: 'pi pi-chart-bar' },
+      { label: 'Fluxo de Caixa', route: '/gerencial/fluxo-caixa', icon: 'pi pi-wave-pulse' }
+    ]
   }
 ];
 

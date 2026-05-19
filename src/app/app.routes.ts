@@ -205,6 +205,13 @@ export const routes: Routes = [
   { path: 'cadastros/ncm', canActivate: [authGuard, storeGuard], loadComponent: () => import('./features/auxiliares/ncm.page').then((m) => m.NcmPage) },
   { path: 'cadastros/montadoras', canActivate: [authGuard, storeGuard], loadComponent: () => import('./features/auxiliares/montadoras.page').then((m) => m.MontadorasPage) },
 
+  // Gerencial
+  { path: 'gerencial', redirectTo: 'gerencial/dre', pathMatch: 'full' },
+  { path: 'gerencial/dre', canActivate: [authGuard, storeGuard],
+    loadComponent: () => import('./features/gerencial/dre.page').then(m => m.DrePage) },
+  { path: 'gerencial/fluxo-caixa', canActivate: [authGuard, storeGuard],
+    loadComponent: () => import('./features/gerencial/fluxo-caixa.page').then(m => m.FluxoCaixaPage) },
+
   // Caixa - operacoes avulsas
   { path: 'caixa/suprimento', canActivate: [authGuard, storeGuard], loadComponent: () => import('./features/caixa/suprimento.page').then((m) => m.SuprimentoPage) },
   { path: 'caixa/fechamento-diario', canActivate: [authGuard, storeGuard], loadComponent: () => import('./features/caixa/fechamento-diario.page').then((m) => m.FechamentoDiarioPage) },
