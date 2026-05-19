@@ -11,7 +11,8 @@
   color: #111827;
 }
 
-:root.dark {
+:root.dark,
+:root[data-theme="dark"] {
   color-scheme: dark;
   background: #0f172a;
   color: #e5e7eb;
@@ -226,6 +227,46 @@ textarea {
 
   .p-button {
     letter-spacing: 0;
+  }
+
+  :root[data-theme="dark"] .p-inputtext,
+  :root[data-theme="dark"] .p-inputtextarea,
+  :root[data-theme="dark"] .p-inputnumber-input,
+  :root[data-theme="dark"] .p-dropdown,
+  :root[data-theme="dark"] .p-multiselect,
+  :root[data-theme="dark"] .p-calendar .p-inputtext,
+  :root[data-theme="dark"] .p-dialog,
+  :root[data-theme="dark"] .p-dialog .p-dialog-header,
+  :root[data-theme="dark"] .p-dialog .p-dialog-content,
+  :root[data-theme="dark"] .p-dialog .p-dialog-footer,
+  :root[data-theme="dark"] .p-datatable,
+  :root[data-theme="dark"] .p-datatable .p-datatable-header,
+  :root[data-theme="dark"] .p-datatable .p-datatable-thead > tr > th,
+  :root[data-theme="dark"] .p-datatable .p-datatable-tbody > tr,
+  :root[data-theme="dark"] .p-datatable .p-paginator,
+  :root[data-theme="dark"] .p-tabview .p-tabview-nav,
+  :root[data-theme="dark"] .p-tabview .p-tabview-panels,
+  :root[data-theme="dark"] .p-accordion .p-accordion-header-link,
+  :root[data-theme="dark"] .p-accordion .p-accordion-content {
+    border-color: var(--chb-border) !important;
+    background: var(--chb-surface) !important;
+    color: var(--chb-text) !important;
+  }
+
+  :root[data-theme="dark"] .p-dropdown-panel,
+  :root[data-theme="dark"] .p-dropdown-items-wrapper,
+  :root[data-theme="dark"] .p-dropdown-items,
+  :root[data-theme="dark"] .p-menu,
+  :root[data-theme="dark"] .p-overlaypanel {
+    border-color: var(--chb-border) !important;
+    background: var(--chb-surface) !important;
+    color: var(--chb-text) !important;
+  }
+
+  :root[data-theme="dark"] .p-dropdown-item,
+  :root[data-theme="dark"] .p-menuitem-link,
+  :root[data-theme="dark"] .p-tabview .p-tabview-nav li .p-tabview-nav-link {
+    color: var(--chb-text) !important;
   }
 }
 

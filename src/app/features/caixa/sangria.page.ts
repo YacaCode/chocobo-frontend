@@ -12,43 +12,26 @@ import { catchError, of } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputNumberModule } from 'primeng/inputnumber';
-import { DropdownModule } from 'primeng/dropdown';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
-
-const TIPOS = [
-  { label: 'Sangria (retirada de dinheiro)', value: 'SANGRIA' },
-  { label: 'Suprimento (adicao de dinheiro)', value: 'SUPRIMENTO' }
-];
 
 @Component({
   selector: 'chb-sangria-page',
   standalone: true,
-  imports: [ButtonModule, CurrencyPipe, DropdownModule, FormsModule, InputNumberModule, InputTextModule, ToastModule],
+  imports: [ButtonModule, CurrencyPipe, FormsModule, InputNumberModule, InputTextModule, ToastModule],
   providers: [MessageService],
   template: `
     <p-toast></p-toast>
 
     <section class="sangria-page">
       <div class="sangria-card">
-        <div class="sangria-icon" [class.icon-suprimento]="tipo === 'SUPRIMENTO'">
-          <i [class]="tipo === 'SUPRIMENTO' ? 'pi pi-arrow-down-left' : 'pi pi-arrow-up-right'" aria-hidden="true"></i>
+        <div class="sangria-icon">
+          <i class="pi pi-arrow-up-right" aria-hidden="true"></i>
         </div>
-        <h2>{{ tipo === 'SUPRIMENTO' ? 'Suprimento de Caixa' : 'Sangria de Caixa' }}</h2>
-        <p>{{ tipo === 'SUPRIMENTO' ? 'Adicione dinheiro ao caixa para operacoes.' : 'Retire dinheiro do caixa para guarda-lo.' }}</p>
+        <h2>Sangria de Caixa</h2>
+        <p>Retire dinheiro do caixa para guarda ou pagamento operacional.</p>
 
         <div class="sangria-form">
-          <label>
-            <span>Tipo de Operação</span>
-            <p-dropdown
-              [(ngModel)]="tipo"
-              [options]="tipos"
-              optionLabel="label"
-              optionValue="value"
-              [style]="{ width: '100%' }">
-            </p-dropdown>
-          </label>
-
           <label>
             <span>Valor (R$)</span>
             <p-inputNumber
@@ -83,10 +66,10 @@ const TIPOS = [
           <button
             pButton
             type="button"
-            [icon]="tipo === 'SUPRIMENTO' ? 'pi pi-plus-circle' : 'pi pi-minus-circle'"
-            [label]="tipo === 'SUPRIMENTO' ? 'Confirmar Suprimento' : 'Confirmar Sangria'"
+            icon="pi pi-minus-circle"
+            label="Confirmar Sangria"
             [loading]="salvando()"
-            [class]="tipo === 'SUPRIMENTO' ? 'sangria-btn-suprimento w-full' : 'sangria-btn w-full'"
+            class="sangria-btn w-full"
             (click)="confirmar()">
           </button>
 
@@ -134,11 +117,6 @@ const TIPOS = [
       background: #fee2e2;
       color: #dc2626;
       font-size: 1.75rem;
-    }
-
-    .icon-suprimento {
-      background: #dcfce7;
-      color: #16a34a;
     }
 
     h2 {
@@ -193,14 +171,9 @@ const TIPOS = [
       font-size: 0.875rem;
     }
 
-    .sangria-btn, .sangria-btn-suprimento {
+    .sangria-btn {
       padding: 0.85rem;
       font-size: 1rem;
-    }
-
-    :host ::ng-deep .sangria-btn-suprimento {
-      background: #16a34a !important;
-      border-color: #16a34a !important;
     }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -213,10 +186,8 @@ export class SangriaPage {
   readonly salvando = signal(false);
   readonly erro = signal('');
 
-  tipo: 'SANGRIA' | 'SUPRIMENTO' = 'SANGRIA';
   valor = 0;
   motivo = '';
-  readonly tipos = TIPOS;
 
   confirmar(): void {
     this.erro.set('');
@@ -234,7 +205,7 @@ export class SangriaPage {
 
     const sessaoId = 'sessao-atual';
     const payload = {
-      tipo: this.tipo,
+      tipo: 'SANGRIA',
       valor: this.valor,
       motivo: this.motivo.trim(),
       dataMovimento: new Date().toISOString()
@@ -247,7 +218,7 @@ export class SangriaPage {
       this.salvando.set(false);
       this.messageService.add({
         severity: 'success',
-        summary: this.tipo === 'SUPRIMENTO' ? 'Suprimento registrado!' : 'Sangria registrada!',
+        summary: 'Sangria registrada!',
         detail: `Movimento ${rec['id'] ?? 'demo'} - R$ ${this.valor.toFixed(2)}`
       });
       this.valor = 0;

@@ -15,6 +15,7 @@ import { HttpClient } from '@angular/common/http';
 import { Subject, debounceTime, distinctUntilChanged, takeUntil, catchError, of } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
+import { SkeletonModule } from 'primeng/skeleton';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { DropdownModule } from 'primeng/dropdown';
@@ -58,7 +59,7 @@ const STATUS_OPTIONS = [
   imports: [
     ButtonModule, CalendarModule, CurrencyPipe, DatePipe,
     DropdownModule, FormsModule, InputTextModule,
-    TableModule, TagModule, ToastModule
+    SkeletonModule, TableModule, TagModule, ToastModule
   ],
   providers: [MessageService],
   template: `
@@ -133,6 +134,13 @@ const STATUS_OPTIONS = [
           <small class="pv-hint">F1=Busca &nbsp; Ctrl+N=Nova &nbsp; Click=Abrir</small>
         </div>
 
+        @if (loading() && !preVendas().length) {
+          <div class="skeleton-list">
+            @for (i of [1,2,3,4,5,6]; track i) {
+              <p-skeleton height="3rem" styleClass="mb-1"></p-skeleton>
+            }
+          </div>
+        } @else {
         <p-table
           [value]="preVendasFiltradas()"
           [loading]="loading()"
@@ -178,6 +186,7 @@ const STATUS_OPTIONS = [
             </tr>
           </ng-template>
         </p-table>
+        } <!-- end @else -->
       </div>
     </section>
   `,
@@ -319,6 +328,8 @@ const STATUS_OPTIONS = [
       color: var(--chb-text-muted);
       font-size: 0.75rem;
     }
+
+    .skeleton-list { display: grid; gap: 0.35rem; }
 
     @media (max-width: 767px) {
       .pv-kpis { grid-template-columns: 1fr; }

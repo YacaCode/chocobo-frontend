@@ -16,6 +16,7 @@ import { Subject, debounceTime, distinctUntilChanged, takeUntil, catchError, of,
 import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
 import { InputTextModule } from 'primeng/inputtext';
+import { SkeletonModule } from 'primeng/skeleton';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 
@@ -52,7 +53,7 @@ const DEMO_PRODUTOS: Produto[] = [
 @Component({
   selector: 'chb-produtos-list',
   standalone: true,
-  imports: [ButtonModule, CheckboxModule, CurrencyPipe, FormsModule, InputTextModule, TableModule, TagModule],
+  imports: [ButtonModule, CheckboxModule, CurrencyPipe, FormsModule, InputTextModule, SkeletonModule, TableModule, TagModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <section class="page">
@@ -151,6 +152,13 @@ const DEMO_PRODUTOS: Produto[] = [
           <span class="registro-count">{{ produtosFiltrados().length }} produto(s) encontrado(s)</span>
         </div>
 
+        @if (loading() && !produtos().length) {
+          <div class="skeleton-list">
+            @for (i of [1,2,3,4,5,6]; track i) {
+              <p-skeleton height="3rem" styleClass="mb-1"></p-skeleton>
+            }
+          </div>
+        } @else {
         <p-table
           [value]="produtosFiltrados()"
           [loading]="loading()"
@@ -216,6 +224,7 @@ const DEMO_PRODUTOS: Produto[] = [
             </tr>
           </ng-template>
         </p-table>
+        }
       </div>
 
       @if (toastMsg()) {
@@ -284,6 +293,7 @@ const DEMO_PRODUTOS: Produto[] = [
     }
     .table-toolbar { display: flex; align-items: center; justify-content: space-between; }
     .registro-count { color: var(--chb-text-muted); font-size: .85rem; }
+    .skeleton-list { display: grid; gap: 0.35rem; }
     .row-clickable { cursor: pointer; }
     .row-promocao td { color: #1d4ed8; }
     .row-promocao:hover td { background: #eff6ff; }

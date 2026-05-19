@@ -14,6 +14,7 @@ import { HttpClient } from '@angular/common/http';
 import { Subject, debounceTime, distinctUntilChanged, takeUntil, catchError, of } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
+import { SkeletonModule } from 'primeng/skeleton';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { DropdownModule } from 'primeng/dropdown';
@@ -55,7 +56,7 @@ const STATUS_FILTRO = [
   standalone: true,
   imports: [
     ButtonModule, CurrencyPipe, DecimalPipe, DropdownModule,
-    FormsModule, InputTextModule, TableModule, TagModule, ToastModule
+    FormsModule, InputTextModule, SkeletonModule, TableModule, TagModule, ToastModule
   ],
   providers: [MessageService],
   template: `
@@ -138,6 +139,13 @@ const STATUS_FILTRO = [
           <small class="saldos-hint">{{ saldosFiltrados().length }} registro(s)</small>
         </div>
 
+        @if (loading() && !saldos().length) {
+          <div class="skeleton-list">
+            @for (i of [1,2,3,4,5,6]; track i) {
+              <p-skeleton height="3rem" styleClass="mb-1"></p-skeleton>
+            }
+          </div>
+        } @else {
         <p-table
           [value]="saldosFiltrados()"
           [loading]="loading()"
@@ -181,6 +189,7 @@ const STATUS_FILTRO = [
             </tr>
           </ng-template>
         </p-table>
+        } <!-- end @else -->
       </div>
     </section>
   `,
@@ -346,6 +355,8 @@ const STATUS_FILTRO = [
     :host-context(.dark) .row-critico { background: rgba(245,158,11,0.08) !important; }
     :host-context(.dark) .row-comprar { background: rgba(249,115,22,0.08) !important; }
     :host-context(.dark) .row-zerado { background: rgba(239,68,68,0.08) !important; }
+
+    .skeleton-list { display: grid; gap: 0.35rem; }
 
     @media (max-width: 900px) {
       .saldos-kpis { grid-template-columns: repeat(2, 1fr); }

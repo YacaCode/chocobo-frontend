@@ -14,16 +14,33 @@ export function isElectronRuntime(win: Window = window): boolean {
 }
 
 export function renderBrowserBlocked(documentRef: Document = document): void {
-  documentRef.body.innerHTML = `
-    <main class="runtime-block">
-      <section class="runtime-block__panel" aria-labelledby="runtime-block-title">
-        <span class="runtime-block__icon" aria-hidden="true">C</span>
-        <p>Chocobo</p>
-        <h1 id="runtime-block-title">Abra pelo aplicativo desktop</h1>
-        <span>Este sistema foi bloqueado para navegadores comuns e deve ser executado pelo Electron.</span>
-      </section>
-    </main>
-  `;
+  documentRef.body.replaceChildren();
+
+  const main = documentRef.createElement('main');
+  main.className = 'runtime-block';
+
+  const section = documentRef.createElement('section');
+  section.className = 'runtime-block__panel';
+  section.setAttribute('aria-labelledby', 'runtime-block-title');
+
+  const icon = documentRef.createElement('span');
+  icon.className = 'runtime-block__icon';
+  icon.setAttribute('aria-hidden', 'true');
+  icon.textContent = 'C';
+
+  const brand = documentRef.createElement('p');
+  brand.textContent = 'Chocobo';
+
+  const title = documentRef.createElement('h1');
+  title.id = 'runtime-block-title';
+  title.textContent = 'Abra pelo aplicativo desktop';
+
+  const message = documentRef.createElement('span');
+  message.textContent = 'Este sistema foi bloqueado para navegadores comuns e deve ser executado pelo Electron.';
+
+  section.append(icon, brand, title, message);
+  main.appendChild(section);
+  documentRef.body.appendChild(main);
 
   const style = documentRef.createElement('style');
   style.textContent = `

@@ -1,15 +1,8 @@
+import { inject } from '@angular/core';
 import type { HttpInterceptorFn } from '@angular/common/http';
 
-type StoredSession = {
-  token?: string;
-  activeStoreId?: string | null;
-  serverUrl?: string;
-  user?: {
-    login?: string;
-  };
-};
+import { AuthService } from '../auth/auth.service';
 
-const SESSION_KEY = 'chocobo.auth.session';
 const LOCAL_BACKEND_ORIGIN = 'http://127.0.0.1:8080';
 
 export const apiBaseUrlInterceptor: HttpInterceptorFn = (request, next) => {
@@ -17,7 +10,10 @@ export const apiBaseUrlInterceptor: HttpInterceptorFn = (request, next) => {
     return next(request);
   }
 
-  const session = readSession();
+  const auth = inject(AuthService);
+  const session = auth.session();
+  const loginServerUrl = readLoginServerUrl(request.body);
+  const serverUrl = session?.serverUrl || loginServerUrl || auth.lastServerUrl();
   let headers = request.headers.set('Accept', 'application/json');
 
   if (session?.token) {
@@ -36,7 +32,7 @@ export const apiBaseUrlInterceptor: HttpInterceptorFn = (request, next) => {
     headers = headers.set('X-Chocobo-User', session.user.login);
   }
 
-  const apiBaseUrl = resolveApiBaseUrl(session?.serverUrl);
+  const apiBaseUrl = resolveApiBaseUrl(serverUrl);
 
   return next(request.clone({
     url: apiBaseUrl ? new URL(request.url, apiBaseUrl).toString() : request.url,
@@ -66,11 +62,11 @@ function normalizeOrigin(value: string): string {
   return `http://${trimmed.replace(/^\/+/, '').replace(/\/+$/, '')}`;
 }
 
-function readSession(): StoredSession | null {
-  try {
-    const raw = localStorage.getItem(SESSION_KEY);
-    return raw ? JSON.parse(raw) as StoredSession : null;
-  } catch {
-    return null;
+function readLoginServerUrl(body: unknown): string {
+  if (typeof body !== 'object' || body === null) {
+    return '';
   }
+
+  const server = (body as Record<string, unknown>)['server'];
+  return typeof server === 'string' ? server : '';
 }

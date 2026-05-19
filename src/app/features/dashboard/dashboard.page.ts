@@ -1,6 +1,8 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { RouterLink } from '@angular/router';
+import type { EChartsOption } from 'echarts';
+import { NgxEchartsDirective } from 'ngx-echarts';
 import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
 
@@ -42,7 +44,7 @@ function formatBRL(value: number): string {
 @Component({
   selector: 'chb-dashboard-page',
   standalone: true,
-  imports: [ButtonModule, RouterLink, TagModule],
+  imports: [ButtonModule, NgxEchartsDirective, RouterLink, TagModule],
   template: `
     <section class="dashboard">
       <header class="dashboard__hero">
@@ -90,26 +92,18 @@ function formatBRL(value: number): string {
 
         <article class="panel">
           <div class="panel__title">
-            <p>Vendas por modulo</p>
-            <h3>Conversao</h3>
+            <p>Semana</p>
+            <h3>Vendas por dia</h3>
           </div>
-          <div class="bars">
-            <div>
-              <span>Pre-venda</span>
-              <strong>72%</strong>
-              <i style="--value: 72%"></i>
-            </div>
-            <div>
-              <span>PDV direto</span>
-              <strong>18%</strong>
-              <i style="--value: 18%"></i>
-            </div>
-            <div>
-              <span>Oficina</span>
-              <strong>10%</strong>
-              <i style="--value: 10%"></i>
-            </div>
+          <div echarts [options]="vendasChartOptions()" class="chart"></div>
+        </article>
+
+        <article class="panel">
+          <div class="panel__title">
+            <p>Pagamentos</p>
+            <h3>Distribuicao por forma</h3>
           </div>
+          <div echarts [options]="pagamentosChartOptions()" class="chart"></div>
         </article>
 
         <article class="panel panel--wide">
@@ -251,7 +245,7 @@ function formatBRL(value: number): string {
 
     .dashboard__grid {
       display: grid;
-      grid-template-columns: 1.2fr 0.8fr;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 0.85rem;
     }
 
@@ -298,39 +292,7 @@ function formatBRL(value: number): string {
       font-weight: 800;
     }
 
-    .bars {
-      display: grid;
-      gap: 1rem;
-    }
-
-    .bars div {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 0.45rem 1rem;
-      color: var(--chb-text);
-      font-weight: 800;
-    }
-
-    .bars span {
-      color: var(--chb-text-muted);
-    }
-
-    .bars i {
-      grid-column: 1 / -1;
-      height: 0.7rem;
-      overflow: hidden;
-      border-radius: 999px;
-      background: var(--chb-navy-50);
-    }
-
-    .bars i::before {
-      display: block;
-      width: var(--value);
-      height: 100%;
-      border-radius: inherit;
-      background: var(--chb-yellow);
-      content: '';
-    }
+    .chart { width: 100%; min-height: 15rem; }
 
     .shortcuts {
       display: grid;
@@ -436,6 +398,69 @@ export class DashboardPage implements OnInit {
   });
 
   readonly workItems = workItems;
+
+  readonly vendasChartOptions = computed<EChartsOption>(() => {
+    const total = this.data()?.vendasHoje ?? 0;
+    const base = total > 0 ? total : 9884;
+    const valores = [0.76, 1.1, 0.92, 1.24, 1.45, 0.68].map((fator) => Math.round(base * fator));
+
+    return {
+      color: ['#F9A825'],
+      tooltip: {
+        trigger: 'axis',
+        valueFormatter: (value: unknown) => formatBRL(Number(value ?? 0))
+      },
+      grid: { left: 48, right: 16, top: 22, bottom: 32 },
+      xAxis: {
+        type: 'category',
+        data: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'],
+        axisTick: { show: false }
+      },
+      yAxis: {
+        type: 'value',
+        name: 'R$',
+        axisLabel: {
+          formatter: (value: number) => `${Math.round(value / 1000)}k`
+        }
+      },
+      series: [{
+        name: 'Vendas',
+        type: 'bar',
+        barMaxWidth: 34,
+        data: valores,
+        itemStyle: { borderRadius: [4, 4, 0, 0] }
+      }]
+    };
+  });
+
+  readonly pagamentosChartOptions = computed<EChartsOption>(() => {
+    const total = this.data()?.vendasHoje ?? 9884;
+    return {
+      color: ['#F9A825', '#00897B', '#1A237E', '#60a5fa'],
+      tooltip: {
+        trigger: 'item',
+        valueFormatter: (value: unknown) => formatBRL(Number(value ?? 0))
+      },
+      legend: {
+        bottom: 0,
+        left: 'center'
+      },
+      series: [{
+        name: 'Forma de pagamento',
+        type: 'pie',
+        radius: ['46%', '68%'],
+        center: ['50%', '44%'],
+        avoidLabelOverlap: true,
+        label: { formatter: '{b}' },
+        data: [
+          { name: 'Dinheiro', value: Math.round(total * 0.19) },
+          { name: 'Pix', value: Math.round(total * 0.32) },
+          { name: 'Debito', value: Math.round(total * 0.22) },
+          { name: 'Credito', value: Math.round(total * 0.27) }
+        ]
+      }]
+    };
+  });
 
   ngOnInit(): void {
     this.loading.set(true);

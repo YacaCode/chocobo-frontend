@@ -296,7 +296,7 @@ export class LoginPage {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
 
-  readonly serverUrl = signal(this.auth.session()?.serverUrl ?? 'http://127.0.0.1:8080');
+  readonly serverUrl = signal(this.auth.session()?.serverUrl ?? (this.auth.lastServerUrl() || 'http://127.0.0.1:8080'));
   readonly username = signal('admin');
   readonly password = signal('Admin@123');
   readonly loading = signal(false);

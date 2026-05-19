@@ -179,6 +179,19 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadComponent: () => import('./features/preferencias/preferencias.page').then((m) => m.PreferenciasPage)
   },
+  // Cadastros auxiliares
+  { path: 'cadastros/fabricantes', canActivate: [authGuard, storeGuard], loadComponent: () => import('./features/auxiliares/fabricantes.page').then((m) => m.FabricantesPage) },
+  { path: 'cadastros/secoes', canActivate: [authGuard, storeGuard], loadComponent: () => import('./features/auxiliares/secoes.page').then((m) => m.SecoesPage) },
+  { path: 'cadastros/unidades', canActivate: [authGuard, storeGuard], loadComponent: () => import('./features/auxiliares/unidades.page').then((m) => m.UnidadesPage) },
+  { path: 'cadastros/ncm', canActivate: [authGuard, storeGuard], loadComponent: () => import('./features/auxiliares/ncm.page').then((m) => m.NcmPage) },
+  { path: 'cadastros/montadoras', canActivate: [authGuard, storeGuard], loadComponent: () => import('./features/auxiliares/montadoras.page').then((m) => m.MontadorasPage) },
+
+  // Caixa - operacoes avulsas
+  { path: 'caixa/suprimento', canActivate: [authGuard, storeGuard], loadComponent: () => import('./features/caixa/suprimento.page').then((m) => m.SuprimentoPage) },
+  { path: 'caixa/fechamento-diario', canActivate: [authGuard, storeGuard], loadComponent: () => import('./features/caixa/fechamento-diario.page').then((m) => m.FechamentoDiarioPage) },
+  { path: 'caixa/recebimento-avulso', canActivate: [authGuard, storeGuard], loadComponent: () => import('./features/caixa/recebimento-avulso.page').then((m) => m.RecebimentoAvulsoPage) },
+  { path: 'caixa/pagamento-avulso', canActivate: [authGuard, storeGuard], loadComponent: () => import('./features/caixa/pagamento-avulso.page').then((m) => m.PagamentoAvulsoPage) },
+
   {
     path: '**',
     loadComponent: () => import('./features/not-found/not-found.page').then((m) => m.NotFoundPage)

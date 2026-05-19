@@ -1,6 +1,7 @@
 import { CurrencyPipe, DecimalPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, effect, inject, input, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { TableModule } from 'primeng/table';
@@ -24,9 +25,9 @@ import type { WorkspaceColumn, WorkspaceConfig, WorkspaceRow } from './workspace
         </div>
         <div class="workspace__actions" aria-label="Acoes da pagina">
           @for (action of resolvedConfig().secondaryActions; track action.label) {
-            <button pButton type="button" class="p-button-outlined" [icon]="action.icon" [label]="action.label" (click)="touch(action.label)"></button>
+            <button pButton type="button" class="p-button-outlined" [icon]="action.icon" [label]="action.label" (click)="executarAcao(action)"></button>
           }
-          <button pButton type="button" [icon]="resolvedConfig().primaryAction.icon" [label]="resolvedConfig().primaryAction.label" (click)="touch(resolvedConfig().primaryAction.label)"></button>
+          <button pButton type="button" [icon]="resolvedConfig().primaryAction.icon" [label]="resolvedConfig().primaryAction.label" (click)="executarAcao(resolvedConfig().primaryAction)"></button>
         </div>
       </header>
 
@@ -482,6 +483,7 @@ import type { WorkspaceColumn, WorkspaceConfig, WorkspaceRow } from './workspace
 })
 export class WorkspacePage {
   private readonly api = inject(DemoApiService);
+  private readonly router = inject(Router);
 
   readonly config = input<WorkspaceConfig | null>(null);
   readonly rows = signal<WorkspaceRow[]>([]);
@@ -557,6 +559,14 @@ export class WorkspacePage {
 
   touch(label: string): void {
     this.lastAction.set(`${label}: acao registrada localmente para conferencia.`);
+  }
+
+  executarAcao(action: { label: string; route?: string }): void {
+    if (action.route) {
+      void this.router.navigateByUrl(action.route);
+      return;
+    }
+    this.touch(action.label);
   }
 
   saveDraft(): void {

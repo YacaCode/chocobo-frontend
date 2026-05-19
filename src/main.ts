@@ -6,6 +6,7 @@ import { bootstrapApplication } from '@angular/platform-browser';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { ServiceWorkerModule } from '@angular/service-worker';
+import { provideEcharts } from 'ngx-echarts';
 import { MessageService } from 'primeng/api';
 
 import { AppComponent } from './app/app.component';
@@ -25,6 +26,7 @@ if (!isElectronRuntime()) {
   bootstrapApplication(AppComponent, {
     providers: [
       provideAnimations(),
+      provideEcharts(),
       provideHttpClient(withInterceptors([apiBaseUrlInterceptor])),
       provideRouter(routes, withComponentInputBinding()),
       MessageService,

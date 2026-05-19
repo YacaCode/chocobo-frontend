@@ -5,7 +5,8 @@ import type { Observable } from 'rxjs';
 
 import type { AuthSession, ChocoboRole, ChocoboStore, ChocoboUser, LoginRequest, LoginResult } from './auth.models';
 
-const SESSION_KEY = 'chocobo.auth.session';
+const LEGACY_SESSION_KEY = 'chocobo.auth.session';
+const LAST_SERVER_URL_KEY = 'chocobo.auth.serverUrl';
 
 const DEMO_STORES: ChocoboStore[] = [
   {
@@ -29,9 +30,11 @@ const DEMO_STORES: ChocoboStore[] = [
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly http = inject(HttpClient);
-  private readonly sessionSignal = signal<AuthSession | null>(readStoredSession());
+  private readonly sessionSignal = signal<AuthSession | null>(null);
+  private readonly lastServerUrlSignal = signal(readStoredServerUrl());
 
   readonly session = this.sessionSignal.asReadonly();
+  readonly lastServerUrl = this.lastServerUrlSignal.asReadonly();
   readonly isAuthenticated = computed(() => Boolean(this.sessionSignal()?.token));
   readonly user = computed(() => this.sessionSignal()?.user ?? null);
   readonly stores = computed(() => this.sessionSignal()?.stores ?? []);
@@ -118,40 +121,54 @@ export class AuthService {
 
   logout(): void {
     this.sessionSignal.set(null);
-    localStorage.removeItem(SESSION_KEY);
   }
 
   private commitSession(session: AuthSession): void {
     this.sessionSignal.set(session);
-    localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+    this.rememberServerUrl(session.serverUrl);
+  }
+
+  private rememberServerUrl(serverUrl: string): void {
+    const normalized = serverUrl.trim();
+    if (!normalized) {
+      return;
+    }
+
+    this.lastServerUrlSignal.set(normalized);
+    localStorage.setItem(LAST_SERVER_URL_KEY, normalized);
   }
 }
 
-function readStoredSession(): AuthSession | null {
+function readStoredServerUrl(): string {
+  const storedServerUrl = localStorage.getItem(LAST_SERVER_URL_KEY) ?? '';
+  const legacyRawSession = localStorage.getItem(LEGACY_SESSION_KEY);
+
+  if (legacyRawSession) {
+    localStorage.removeItem(LEGACY_SESSION_KEY);
+  }
+
+  if (storedServerUrl) {
+    return storedServerUrl;
+  }
+
+  const legacyServerUrl = readLegacyServerUrl(legacyRawSession);
+  if (legacyServerUrl) {
+    localStorage.setItem(LAST_SERVER_URL_KEY, legacyServerUrl);
+  }
+
+  return legacyServerUrl;
+}
+
+function readLegacyServerUrl(rawSession: string | null): string {
+  if (!rawSession) {
+    return '';
+  }
+
   try {
-    const raw = localStorage.getItem(SESSION_KEY);
-
-    if (!raw) {
-      return null;
-    }
-
-    const parsed = JSON.parse(raw) as Partial<AuthSession>;
-
-    if (!parsed.token || !parsed.user || !Array.isArray(parsed.stores)) {
-      return null;
-    }
-
-    return {
-      token: String(parsed.token),
-      serverUrl: String(parsed.serverUrl ?? ''),
-      user: normalizeUser(parsed.user),
-      stores: parsed.stores.map((store) => normalizeStore(store)),
-      activeStoreId: typeof parsed.activeStoreId === 'string' ? parsed.activeStoreId : null,
-      demoMode: Boolean(parsed.demoMode),
-      createdAt: typeof parsed.createdAt === 'string' ? parsed.createdAt : new Date().toISOString()
-    };
+    const parsed = JSON.parse(rawSession) as { serverUrl?: unknown };
+    return typeof parsed.serverUrl === 'string' ? parsed.serverUrl : '';
   } catch {
-    return null;
+    return '';
   }
 }
 

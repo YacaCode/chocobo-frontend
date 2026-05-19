@@ -26,6 +26,7 @@ export type WorkspaceQueueItem = {
 export type WorkspaceAction = {
   label: string;
   icon: string;
+  route?: string;
 };
 
 export type WorkspaceFormField = {

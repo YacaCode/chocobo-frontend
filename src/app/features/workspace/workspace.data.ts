@@ -440,10 +440,13 @@ export const workspaceConfigs: Record<string, WorkspaceConfig> = {
     title: 'Operacoes de caixa',
     description: 'Abertura, suprimento, sangria, recebimento, pagamento e fechamento diario.',
     endpoint: '/api/v1/caixa/sessoes',
-    primaryAction: { label: 'Nova sangria', icon: 'pi pi-arrow-up-right' },
+    primaryAction: { label: 'Nova sangria', icon: 'pi pi-arrow-up-right', route: '/caixa/sangria' },
     secondaryActions: [
-      { label: 'Suprimento', icon: 'pi pi-arrow-down-left' },
-      { label: 'Encerrar caixa', icon: 'pi pi-lock' }
+      { label: 'Suprimento', icon: 'pi pi-arrow-down-left', route: '/caixa/suprimento' },
+      { label: 'Recebimento', icon: 'pi pi-plus-circle', route: '/caixa/recebimento-avulso' },
+      { label: 'Pagamento', icon: 'pi pi-minus-circle', route: '/caixa/pagamento-avulso' },
+      { label: 'Fechamento diario', icon: 'pi pi-print', route: '/caixa/fechamento-diario' },
+      { label: 'Encerrar caixa', icon: 'pi pi-lock', route: '/caixa/encerrar-sessao' }
     ],
     kpis: [
       { label: 'Dinheiro', value: 'R$ 2.842', detail: 'gaveta atual', icon: 'pi pi-wallet', tone: 'success' },

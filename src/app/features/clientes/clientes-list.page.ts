@@ -15,6 +15,7 @@ import { Subject, debounceTime, distinctUntilChanged, takeUntil, catchError, of,
 import { ButtonModule } from 'primeng/button';
 import { DropdownModule } from 'primeng/dropdown';
 import { InputTextModule } from 'primeng/inputtext';
+import { SkeletonModule } from 'primeng/skeleton';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 
@@ -46,7 +47,7 @@ const DEMO_CLIENTES: Cliente[] = [
 @Component({
   selector: 'chb-clientes-list',
   standalone: true,
-  imports: [ButtonModule, DropdownModule, FormsModule, InputTextModule, RouterLink, TableModule, TagModule],
+  imports: [ButtonModule, DropdownModule, FormsModule, InputTextModule, RouterLink, SkeletonModule, TableModule, TagModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <section class="page">
@@ -152,6 +153,13 @@ const DEMO_CLIENTES: Cliente[] = [
             <span class="registro-count">{{ clientesFiltrados().length }} registro(s) encontrado(s)</span>
           </div>
 
+          @if (loading() && !clientes().length) {
+            <div class="skeleton-list">
+              @for (i of [1,2,3,4,5,6]; track i) {
+                <p-skeleton height="3rem" styleClass="mb-1"></p-skeleton>
+              }
+            </div>
+          } @else {
           <p-table
             [value]="clientesFiltrados()"
             [loading]="loading()"
@@ -196,6 +204,7 @@ const DEMO_CLIENTES: Cliente[] = [
               </tr>
             </ng-template>
           </p-table>
+          } <!-- end @else -->
         </div>
       </div>
 
@@ -263,6 +272,7 @@ const DEMO_CLIENTES: Cliente[] = [
     .table-toolbar { display: flex; align-items: center; justify-content: space-between; }
     .registro-count { color: var(--chb-text-muted); font-size: .85rem; }
     .row-clickable { cursor: pointer; }
+    .skeleton-list { display: grid; gap: 0.35rem; }
 
     .toast-notice {
       position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 9999;

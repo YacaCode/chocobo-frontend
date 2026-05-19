@@ -427,3 +427,39 @@ Status: implementado em 2026-05-19. Commit: `829d77d`
 
 - `npm run build`: verde em 2026-05-19 (zero erros TypeScript; 2 warnings de budget CSS pré-existentes nos componentes pre-venda e pdv).
 - `npm run test`: verde em 2026-05-19 (1/1 passando).
+
+## Blocos B-D - Auxiliares, Caixa, UX, Dark Mode e Dashboard (2026-05-19)
+
+Status: implementado em 2026-05-19. Commit: local nesta alteracao.
+
+### B-006 [FE] Auxiliares
+
+- Criado `src/app/shared/crud-auxiliar/crud-auxiliar.component.ts` com p-table, p-dialog, p-toast, p-confirmDialog, skeleton inicial, busca local com debounce 400ms, create/update/delete e suporte a campos text/number/checkbox.
+- Criadas paginas auxiliares para fabricantes, secoes, unidades, NCM e montadoras.
+- Rotas adicionadas para `/cadastros/fabricantes`, `/cadastros/secoes`, `/cadastros/unidades`, `/cadastros/ncm` e `/cadastros/montadoras`.
+- Sidebar exposta com os atalhos de cadastros auxiliares.
+
+### B-009 [FE] Caixa
+
+- Criadas paginas separadas de suprimento, fechamento diario, recebimento avulso e pagamento avulso.
+- Sangria ficou restrita a retirada de dinheiro; suprimento agora usa tela propria.
+- Recebimento avulso usa `ClienteBuscaDialog` e envia payload com `clienteId` e `formaPagamentoId`.
+- Workspace de caixa agora navega para sangria, suprimento, recebimento, pagamento, fechamento diario e encerramento.
+
+### C-001/C-002 [FE] UX e Dark Mode
+
+- Adicionados skeletons em clientes, produtos, pre-vendas e saldos de estoque durante carregamento inicial.
+- `ThemeService` passa a ler `chb_theme`, aplicar `data-theme` no `<html>` e persistir light/dark/auto corretamente.
+- Tema Chocobo ajustado para variaveis oficiais e seletores `[data-theme="dark"]`; PrimeNG recebe overrides globais de dark mode.
+- Token JWT deixou de ser persistido em `localStorage`; `AuthService` mantem a sessao autenticada apenas em memoria e o interceptor HTTP le o signal atual.
+
+### D-001 [FE] Dashboard
+
+- Instalados `echarts` e `ngx-echarts`.
+- Dashboard recebeu graficos ECharts de vendas por dia e distribuicao por forma de pagamento.
+- ECharts configurado com provider dinamico para manter o bundle inicial dentro do budget.
+
+### Validacao B-006/B-009/C-001/C-002/D-001
+
+- `npm run build`: verde em 2026-05-19 (zero erros TypeScript; warnings pre-existentes de budget CSS em pre-venda-form e pdv).
+- `npm run test`: verde em 2026-05-19 (1/1 passando).

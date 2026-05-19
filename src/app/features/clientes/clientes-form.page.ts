@@ -493,6 +493,60 @@ interface Contato {
         </ng-template>
       </p-dialog>
 
+      <p-dialog
+        [(visible)]="dialogSocioVisible"
+        [modal]="true"
+        header="Adicionar Socio"
+        [style]="{ width: '480px' }">
+        <div class="dialog-content">
+          <label class="field">
+            <span>Nome</span>
+            <input pInputText [(ngModel)]="novoSocio.nome" placeholder="Nome do socio" />
+          </label>
+          <label class="field">
+            <span>CPF</span>
+            <input pInputText [(ngModel)]="novoSocio.cpf" placeholder="000.000.000-00" />
+          </label>
+          <label class="field">
+            <span>Participacao (%)</span>
+            <p-inputNumber [(ngModel)]="novoSocio.participacao" [min]="0" [max]="100" [maxFractionDigits]="2" suffix="%" [style]="{width:'100%'}"></p-inputNumber>
+          </label>
+        </div>
+        <ng-template pTemplate="footer">
+          <button pButton type="button" label="Cancelar" class="p-button-text" (click)="dialogSocioVisible = false"></button>
+          <button pButton type="button" label="Adicionar" icon="pi pi-check" [disabled]="!novoSocio.nome" (click)="confirmarSocio()"></button>
+        </ng-template>
+      </p-dialog>
+
+      <p-dialog
+        [(visible)]="dialogReferenciaVisible"
+        [modal]="true"
+        header="Adicionar Referencia"
+        [style]="{ width: '520px' }">
+        <div class="dialog-content">
+          <label class="field">
+            <span>Empresa</span>
+            <input pInputText [(ngModel)]="novaReferencia.empresa" placeholder="Empresa" />
+          </label>
+          <label class="field">
+            <span>Contato</span>
+            <input pInputText [(ngModel)]="novaReferencia.contato" placeholder="Contato" />
+          </label>
+          <label class="field">
+            <span>Telefone</span>
+            <input pInputText [(ngModel)]="novaReferencia.telefone" placeholder="Telefone" />
+          </label>
+          <label class="field">
+            <span>Limite informado</span>
+            <p-inputNumber [(ngModel)]="novaReferencia.limiteInformado" mode="currency" currency="BRL" locale="pt-BR" [min]="0" [style]="{width:'100%'}"></p-inputNumber>
+          </label>
+        </div>
+        <ng-template pTemplate="footer">
+          <button pButton type="button" label="Cancelar" class="p-button-text" (click)="dialogReferenciaVisible = false"></button>
+          <button pButton type="button" label="Adicionar" icon="pi pi-check" [disabled]="!novaReferencia.empresa" (click)="confirmarReferencia()"></button>
+        </ng-template>
+      </p-dialog>
+
       @if (toastMsg()) {
         <div class="toast-notice" [class.toast-error]="toastError()">{{ toastMsg() }}</div>
       }
@@ -624,6 +678,10 @@ export class ClientesFormPage implements OnInit, OnDestroy {
 
   dialogContatoVisible = false;
   novoContato: Contato = { data: '', assunto: '', responsavel: '' };
+  dialogSocioVisible = false;
+  novoSocio = { nome: '', cpf: '', participacao: 50, tipo: 'Socio' };
+  dialogReferenciaVisible = false;
+  novaReferencia = { empresa: '', contato: '', telefone: '', limiteInformado: 0 };
 
   readonly perfil = {
     ultimaCompra: 'N/A',
@@ -872,12 +930,14 @@ export class ClientesFormPage implements OnInit, OnDestroy {
   }
 
   adicionarSocio(): void {
-    const nome = window.prompt('Nome do sócio:');
-    if (!nome) return;
-    const cpf = window.prompt('CPF:') ?? '';
-    const participacao = Number(window.prompt('% de participação:', '50') ?? 50);
-    const tipo = 'Sócio';
-    this.socios.update((s) => [...s, { nome, cpf, participacao, tipo }]);
+    this.novoSocio = { nome: '', cpf: '', participacao: 50, tipo: 'Socio' };
+    this.dialogSocioVisible = true;
+  }
+
+  confirmarSocio(): void {
+    if (!this.novoSocio.nome.trim()) return;
+    this.socios.update((s) => [...s, { ...this.novoSocio, nome: this.novoSocio.nome.trim() }]);
+    this.dialogSocioVisible = false;
   }
 
   removerSocio(i: number): void {
@@ -885,12 +945,14 @@ export class ClientesFormPage implements OnInit, OnDestroy {
   }
 
   adicionarReferencia(): void {
-    const empresa = window.prompt('Empresa:');
-    if (!empresa) return;
-    const contato = window.prompt('Contato:') ?? '';
-    const telefone = window.prompt('Telefone:') ?? '';
-    const limiteInformado = Number(window.prompt('Limite informado (R$):', '0') ?? 0);
-    this.referencias.update((r) => [...r, { empresa, contato, telefone, limiteInformado }]);
+    this.novaReferencia = { empresa: '', contato: '', telefone: '', limiteInformado: 0 };
+    this.dialogReferenciaVisible = true;
+  }
+
+  confirmarReferencia(): void {
+    if (!this.novaReferencia.empresa.trim()) return;
+    this.referencias.update((r) => [...r, { ...this.novaReferencia, empresa: this.novaReferencia.empresa.trim() }]);
+    this.dialogReferenciaVisible = false;
   }
 
   removerReferencia(i: number): void {
