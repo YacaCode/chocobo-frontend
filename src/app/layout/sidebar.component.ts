@@ -81,7 +81,7 @@ const navGroups: NavGroup[] = [
   {
     label: 'Fiscal',
     items: [
-      { label: 'Documentos', route: '/fiscal', icon: 'pi pi-file' }
+      { label: 'Documentos', route: '/fiscal/documentos', icon: 'pi pi-file' }
     ]
   }
 ];

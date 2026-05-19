@@ -165,13 +165,10 @@ export const routes: Routes = [
   { path: 'compras/notas-entrada', canActivate: [authGuard, storeGuard],
     loadComponent: () => import('./features/compras/notas-entrada.page').then(m => m.NotasEntradaPage) },
 
-  // Fiscal (placeholder mantido temporariamente)
-  {
-    path: 'fiscal',
-    canActivate: [authGuard, storeGuard],
-    loadComponent: () => import('./features/workspace/workspace.page').then((m) => m.WorkspacePage),
-    data: { config: workspaceConfigs['fiscal'] }
-  },
+  // Fiscal
+  { path: 'fiscal', redirectTo: 'fiscal/documentos', pathMatch: 'full' },
+  { path: 'fiscal/documentos', canActivate: [authGuard, storeGuard],
+    loadComponent: () => import('./features/fiscal/fiscal-documentos.page').then(m => m.FiscalDocumentosPage) },
   // Serviços / DAV-OS
   { path: 'servicos/oficina', redirectTo: 'servicos/atendimento', pathMatch: 'full' },
   { path: 'servicos/atendimento', canActivate: [authGuard, storeGuard],
