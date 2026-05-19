@@ -32,6 +32,7 @@ const navGroups: NavGroup[] = [
     items: [
       { label: 'Clientes', route: '/cadastros/clientes', icon: 'pi pi-id-card' },
       { label: 'Produtos', route: '/cadastros/produtos', icon: 'pi pi-box' },
+      { label: 'Fornecedores', route: '/cadastros/fornecedores', icon: 'pi pi-truck' },
       { label: 'Fabricantes', route: '/cadastros/fabricantes', icon: 'pi pi-tags' },
       { label: 'Secoes', route: '/cadastros/secoes', icon: 'pi pi-sitemap' },
       { label: 'Unidades', route: '/cadastros/unidades', icon: 'pi pi-hashtag' },

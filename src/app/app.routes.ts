@@ -187,6 +187,14 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadComponent: () => import('./features/preferencias/preferencias.page').then((m) => m.PreferenciasPage)
   },
+  // Fornecedores
+  { path: 'cadastros/fornecedores', canActivate: [authGuard, storeGuard],
+    loadComponent: () => import('./features/fornecedores/fornecedores-list.page').then(m => m.FornecedoresListPage) },
+  { path: 'cadastros/fornecedores/novo', canActivate: [authGuard, storeGuard],
+    loadComponent: () => import('./features/fornecedores/fornecedores-form.page').then(m => m.FornecedoresFormPage) },
+  { path: 'cadastros/fornecedores/:id', canActivate: [authGuard, storeGuard],
+    loadComponent: () => import('./features/fornecedores/fornecedores-form.page').then(m => m.FornecedoresFormPage) },
+
   // Cadastros auxiliares
   { path: 'cadastros/fabricantes', canActivate: [authGuard, storeGuard], loadComponent: () => import('./features/auxiliares/fabricantes.page').then((m) => m.FabricantesPage) },
   { path: 'cadastros/secoes', canActivate: [authGuard, storeGuard], loadComponent: () => import('./features/auxiliares/secoes.page').then((m) => m.SecoesPage) },
