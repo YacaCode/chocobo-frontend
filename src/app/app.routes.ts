@@ -26,14 +26,12 @@ export const routes: Routes = [
   {
     path: 'core/usuarios',
     canActivate: [authGuard, storeGuard],
-    loadComponent: () => import('./features/workspace/workspace.page').then((m) => m.WorkspacePage),
-    data: { config: workspaceConfigs['users'] }
+    loadComponent: () => import('./features/core/usuarios/usuarios.page').then((m) => m.UsuariosPage)
   },
   {
     path: 'core/lojas',
     canActivate: [authGuard, storeGuard],
-    loadComponent: () => import('./features/workspace/workspace.page').then((m) => m.WorkspacePage),
-    data: { config: workspaceConfigs['stores'] }
+    loadComponent: () => import('./features/core/lojas/lojas.page').then((m) => m.LojasPage)
   },
   // Clientes - paginas especificas
   {

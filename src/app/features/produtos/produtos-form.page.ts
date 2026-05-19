@@ -14,16 +14,19 @@ import { Subject, catchError, finalize, of, takeUntil } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
 import { DropdownModule } from 'primeng/dropdown';
+import { FileUploadModule } from 'primeng/fileupload';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
+import { SelectButtonModule } from 'primeng/selectbutton';
+import { TableModule } from 'primeng/table';
 import { TabViewModule } from 'primeng/tabview';
 
 @Component({
   selector: 'chb-produtos-form',
   standalone: true,
   imports: [
-    ButtonModule, CheckboxModule, CurrencyPipe, DropdownModule, FormsModule,
-    InputNumberModule, InputTextModule, ReactiveFormsModule, TabViewModule
+    ButtonModule, CheckboxModule, CurrencyPipe, DropdownModule, FileUploadModule, FormsModule,
+    InputNumberModule, InputTextModule, ReactiveFormsModule, SelectButtonModule, TableModule, TabViewModule
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -69,6 +72,12 @@ import { TabViewModule } from 'primeng/tabview';
                     <small class="error">Descricao obrigatoria.</small>
                   }
                 </label>
+              </div>
+              <div class="form-field-tipo">
+                <label class="field-label-tipo">Tipo de Produto</label>
+                <p-selectButton formControlName="tipo" [options]="tipoSelectOptions" optionLabel="label" optionValue="value" [allowEmpty]="false"></p-selectButton>
+              </div>
+              <div class="grid-3">
                 <label class="field">
                   <span>Fabricante</span>
                   <input pInputText formControlName="fabricante" placeholder="Fabricante" list="fabricantes-list" />
@@ -261,6 +270,120 @@ import { TabViewModule } from 'primeng/tabview';
             </div>
           </p-tabPanel>
 
+          <!-- Aba Referência (multi-fabricante) -->
+          <p-tabPanel header="Referências">
+            <div class="tab-content">
+              <div class="socios-toolbar">
+                <h4 class="section-title">Referências de Fabricantes</h4>
+                <button pButton type="button" icon="pi pi-plus" label="Adicionar" class="p-button-sm p-button-outlined" (click)="adicionarRefFabricante()"></button>
+              </div>
+              @if (refFabricantes().length === 0) {
+                <div class="empty-state-inline">
+                  <i class="pi pi-tag" aria-hidden="true"></i>
+                  <span>Nenhuma referência de fabricante cadastrada.</span>
+                </div>
+              } @else {
+                <p-table [value]="refFabricantes()" styleClass="p-datatable-sm" dataKey="idx">
+                  <ng-template pTemplate="header">
+                    <tr>
+                      <th>Fabricante</th>
+                      <th>Código do Fabricante</th>
+                      <th>Ref. Montadora</th>
+                      <th>Principal</th>
+                      <th style="width:60px"></th>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="body" let-r let-i="rowIndex">
+                    <tr>
+                      <td><input pInputText [(ngModel)]="r.fabricante" [ngModelOptions]="{standalone:true}" placeholder="Fabricante" style="width:100%" /></td>
+                      <td><input pInputText [(ngModel)]="r.codigo" [ngModelOptions]="{standalone:true}" placeholder="Código" style="width:100%" /></td>
+                      <td><input pInputText [(ngModel)]="r.refMontadora" [ngModelOptions]="{standalone:true}" placeholder="Ref. montadora" style="width:100%" /></td>
+                      <td style="text-align:center">
+                        <input type="radio" name="principal" [checked]="r.principal" (change)="setPrincipal(i)" />
+                      </td>
+                      <td><button pButton type="button" icon="pi pi-trash" class="p-button-text p-button-sm p-button-danger" (click)="removerRefFabricante(i)" aria-label="Remover"></button></td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              }
+            </div>
+          </p-tabPanel>
+
+          <!-- Aba Fotos -->
+          <p-tabPanel header="Fotos">
+            <div class="tab-content">
+              <h4 class="section-title">Galeria de Fotos</h4>
+              <p-fileUpload
+                mode="advanced"
+                [multiple]="true"
+                accept="image/*"
+                [maxFileSize]="5000000"
+                chooseLabel="Adicionar fotos"
+                [auto]="false"
+                (onSelect)="onFotosSelecionadas($event)">
+                <ng-template pTemplate="empty">
+                  <div class="empty-state-inline">
+                    <i class="pi pi-images" aria-hidden="true"></i>
+                    <span>Arraste imagens aqui ou clique em Adicionar fotos.</span>
+                  </div>
+                </ng-template>
+              </p-fileUpload>
+              @if (fotosPreview().length > 0) {
+                <div class="fotos-grid">
+                  @for (foto of fotosPreview(); track foto.name; let i = $index) {
+                    <div class="foto-item">
+                      <img [src]="foto.url" [alt]="foto.name" />
+                      @if (i === 0) { <span class="foto-badge">Principal</span> }
+                      <button type="button" class="foto-remover" (click)="removerFoto(i)" aria-label="Remover foto">
+                        <i class="pi pi-times" aria-hidden="true"></i>
+                      </button>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          </p-tabPanel>
+
+          <!-- Aba Composição (Kit) -->
+          <p-tabPanel header="Composição" [disabled]="form.get('tipo')?.value !== 'KIT'">
+            <div class="tab-content">
+              @if (form.get('tipo')?.value !== 'KIT') {
+                <div class="empty-state-inline">
+                  <i class="pi pi-info-circle" aria-hidden="true"></i>
+                  <span>Ative o tipo "Kit" na aba de Dados Principais para gerenciar a composição.</span>
+                </div>
+              } @else {
+                <div class="socios-toolbar">
+                  <h4 class="section-title">Produtos do Kit</h4>
+                  <button pButton type="button" icon="pi pi-plus" label="Adicionar Produto" class="p-button-sm p-button-outlined" (click)="adicionarItemKit()"></button>
+                </div>
+                @if (kitItens().length === 0) {
+                  <div class="empty-state-inline">
+                    <i class="pi pi-box" aria-hidden="true"></i>
+                    <span>Nenhum produto no kit. Clique em Adicionar Produto.</span>
+                  </div>
+                } @else {
+                  <p-table [value]="kitItens()" styleClass="p-datatable-sm">
+                    <ng-template pTemplate="header">
+                      <tr><th>Código</th><th>Descrição</th><th style="width:120px">Quantidade</th><th style="width:60px"></th></tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-item let-i="rowIndex">
+                      <tr>
+                        <td>{{ item.codigo }}</td>
+                        <td>{{ item.descricao }}</td>
+                        <td><p-inputNumber [(ngModel)]="item.quantidade" [ngModelOptions]="{standalone:true}" [min]="1" [showButtons]="true" [style]="{width:'100px'}"></p-inputNumber></td>
+                        <td><button pButton type="button" icon="pi pi-trash" class="p-button-text p-button-sm p-button-danger" (click)="removerItemKit(i)" aria-label="Remover"></button></td>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="footer">
+                      <tr><td colspan="4" style="text-align:right;font-weight:700">Total de itens: {{ kitItens().length }}</td></tr>
+                    </ng-template>
+                  </p-table>
+                }
+              }
+            </div>
+          </p-tabPanel>
+
         </p-tabView>
 
         <!-- FOOTER FIXO -->
@@ -342,6 +465,18 @@ import { TabViewModule } from 'primeng/tabview';
     }
     .toast-error { background: #dc2626; }
 
+    .socios-toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem; }
+    .section-title { margin: 0; font-size: 0.8rem; font-weight: 900; text-transform: uppercase; color: var(--chb-text-muted, #6c757d); }
+    .empty-state-inline { display: flex; align-items: center; gap: 0.75rem; padding: 1.5rem; color: var(--chb-text-muted, #6c757d); background: var(--chb-surface-muted, #f8f9fa); border-radius: 0.4rem; }
+    .empty-state-inline i { font-size: 1.5rem; opacity: 0.6; }
+    .fotos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 0.75rem; margin-top: 1rem; }
+    .foto-item { position: relative; aspect-ratio: 1; border-radius: 0.4rem; overflow: hidden; border: 1px solid var(--chb-border, #dee2e6); }
+    .foto-item img { width: 100%; height: 100%; object-fit: cover; }
+    .foto-badge { position: absolute; top: 0.25rem; left: 0.25rem; background: var(--chb-yellow, #F9A825); color: #1a1a2e; font-size: 0.65rem; font-weight: 900; padding: 0.1rem 0.35rem; border-radius: 0.2rem; }
+    .foto-remover { position: absolute; top: 0.25rem; right: 0.25rem; background: rgba(220,38,38,0.9); border: none; border-radius: 50%; width: 1.4rem; height: 1.4rem; cursor: pointer; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.65rem; }
+    .form-field-tipo { display: grid; gap: 0.35rem; margin-bottom: 0.5rem; }
+    .field-label-tipo { font-size: 0.86rem; font-weight: 700; color: var(--chb-text); }
+
     @media (max-width: 768px) {
       .grid-3 { grid-template-columns: 1fr; }
       .grid-span-2 { grid-column: span 1; }
@@ -369,6 +504,10 @@ export class ProdutosFormPage implements OnInit, OnDestroy {
   readonly fabricantesComuns = ['Motul', 'JN Parts', 'RK', 'Ferodo', 'NGK', 'Pirelli', 'Cofap', 'Riffel', 'Heliar', 'NSK', 'Multimoto'];
   readonly secoesComuns = ['Lubrificantes', 'Filtros', 'Transmissao', 'Freios', 'Ignicao', 'Pneus', 'Suspensao', 'Cabos', 'Rolamentos', 'Eletrica', 'Acessorios'];
 
+  readonly refFabricantes = signal<{fabricante:string;codigo:string;refMontadora:string;principal:boolean}[]>([]);
+  readonly fotosPreview = signal<{name:string;url:string}[]>([]);
+  readonly kitItens = signal<{codigo:string;descricao:string;quantidade:number}[]>([]);
+
   readonly unidadeOptions = [
     { label: 'Unidade (UN)', value: 'UN' },
     { label: 'Quilograma (KG)', value: 'KG' },
@@ -380,7 +519,14 @@ export class ProdutosFormPage implements OnInit, OnDestroy {
 
   readonly tipoOptions = [
     { label: 'Simples', value: 'SIMPLES' },
-    { label: 'Composto/Kit', value: 'KIT' }
+    { label: 'Composto/Kit', value: 'KIT' },
+    { label: 'Serviço', value: 'SERVICO' }
+  ];
+
+  readonly tipoSelectOptions = [
+    { label: 'Simples', value: 'SIMPLES' },
+    { label: 'Kit', value: 'KIT' },
+    { label: 'Serviço', value: 'SERVICO' }
   ];
 
   form = this.fb.group({
@@ -543,6 +689,35 @@ export class ProdutosFormPage implements OnInit, OnDestroy {
 
   cancelar(): void {
     void this.router.navigate(['/cadastros/produtos']);
+  }
+
+  adicionarRefFabricante(): void {
+    this.refFabricantes.update((r) => [...r, { fabricante: '', codigo: '', refMontadora: '', principal: r.length === 0 }]);
+  }
+
+  removerRefFabricante(i: number): void {
+    this.refFabricantes.update((r) => r.filter((_, idx) => idx !== i));
+  }
+
+  setPrincipal(i: number): void {
+    this.refFabricantes.update((r) => r.map((item, idx) => ({ ...item, principal: idx === i })));
+  }
+
+  onFotosSelecionadas(event: { files: File[] }): void {
+    const novas = event.files.map((f) => ({ name: f.name, url: URL.createObjectURL(f) }));
+    this.fotosPreview.update((prev) => [...prev, ...novas]);
+  }
+
+  removerFoto(i: number): void {
+    this.fotosPreview.update((prev) => prev.filter((_, idx) => idx !== i));
+  }
+
+  adicionarItemKit(): void {
+    this.kitItens.update((k) => [...k, { codigo: '', descricao: 'Produto ' + (k.length + 1), quantidade: 1 }]);
+  }
+
+  removerItemKit(i: number): void {
+    this.kitItens.update((k) => k.filter((_, idx) => idx !== i));
   }
 
   toast(msg: string, error: boolean): void {

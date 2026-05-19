@@ -6,6 +6,8 @@ import {
   inject,
   signal
 } from '@angular/core';
+import { AbstractControl, FormControl } from '@angular/forms';
+import { CurrencyPipe } from '@angular/common';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
@@ -16,8 +18,11 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DialogModule } from 'primeng/dialog';
 import { DropdownModule } from 'primeng/dropdown';
+import { FileUploadModule } from 'primeng/fileupload';
+import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputTextareaModule } from 'primeng/inputtextarea';
+import { TableModule } from 'primeng/table';
 import { TabViewModule } from 'primeng/tabview';
 import { TagModule } from 'primeng/tag';
 
@@ -47,9 +52,9 @@ interface Contato {
   selector: 'chb-clientes-form',
   standalone: true,
   imports: [
-    ButtonModule, CalendarModule, CheckboxModule, ConfirmDialogModule,
-    DialogModule, DropdownModule, FormsModule, InputTextModule,
-    InputTextareaModule, ReactiveFormsModule, TabViewModule, TagModule
+    ButtonModule, CalendarModule, CheckboxModule, ConfirmDialogModule, CurrencyPipe,
+    DialogModule, DropdownModule, FileUploadModule, FormsModule, InputNumberModule,
+    InputTextModule, InputTextareaModule, ReactiveFormsModule, TableModule, TabViewModule, TagModule
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -337,6 +342,121 @@ interface Contato {
             </div>
           </p-tabPanel>
 
+          <!-- Aba NFSe -->
+          <p-tabPanel header="NFSe">
+            <div class="form-section">
+              <h4 class="section-title">Configurações de NFS-e</h4>
+              @if (tipoPessoa() !== 'PJ') {
+                <p class="info-muted">NFS-e disponível apenas para Pessoa Jurídica.</p>
+              } @else {
+                <div class="form-row">
+                  <div class="form-field">
+                    <p-checkbox [formControl]="getCtrl('optanteSimplesNacional')" [binary]="true" inputId="optante" label="Optante pelo Simples Nacional"></p-checkbox>
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-field">
+                    <label for="aliquotaIss">Alíquota ISS (%)</label>
+                    <p-inputNumber inputId="aliquotaIss" [formControl]="getCtrl('aliquotaIss')" [min]="0" [max]="10" [maxFractionDigits]="2" suffix="%" [style]="{width:'120px'}"></p-inputNumber>
+                  </div>
+                  <div class="form-field">
+                    <p-checkbox [formControl]="getCtrl('deduzirConstrucaoCivil')" [binary]="true" inputId="deduzir" label="Deduzir construção civil"></p-checkbox>
+                  </div>
+                </div>
+              }
+            </div>
+          </p-tabPanel>
+
+          <!-- Aba Sócios -->
+          <p-tabPanel header="Sócios">
+            <div class="form-section">
+              @if (tipoPessoa() !== 'PJ') {
+                <p class="info-muted">Sócios disponíveis apenas para Pessoa Jurídica.</p>
+              } @else {
+                <div class="socios-toolbar">
+                  <h4 class="section-title">Quadro Societário</h4>
+                  <button pButton type="button" icon="pi pi-plus" label="Adicionar Sócio" class="p-button-sm p-button-outlined" (click)="adicionarSocio()"></button>
+                </div>
+                @if (socios().length === 0) {
+                  <div class="empty-state-inline">
+                    <i class="pi pi-users" aria-hidden="true"></i>
+                    <span>Nenhum sócio cadastrado.</span>
+                  </div>
+                } @else {
+                  <p-table [value]="socios()" styleClass="p-datatable-sm" dataKey="cpf">
+                    <ng-template pTemplate="header">
+                      <tr><th>Nome</th><th>CPF</th><th>% Participação</th><th>Tipo</th><th style="width:60px"></th></tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-s let-i="rowIndex">
+                      <tr>
+                        <td>{{ s.nome }}</td>
+                        <td>{{ s.cpf }}</td>
+                        <td>{{ s.participacao }}%</td>
+                        <td>{{ s.tipo }}</td>
+                        <td><button pButton type="button" icon="pi pi-trash" class="p-button-text p-button-sm p-button-danger" (click)="removerSocio(i)" aria-label="Remover sócio"></button></td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                }
+              }
+            </div>
+          </p-tabPanel>
+
+          <!-- Aba Referências Comerciais -->
+          <p-tabPanel header="Referências">
+            <div class="form-section">
+              <div class="socios-toolbar">
+                <h4 class="section-title">Referências Comerciais</h4>
+                <button pButton type="button" icon="pi pi-plus" label="Adicionar" class="p-button-sm p-button-outlined" (click)="adicionarReferencia()"></button>
+              </div>
+              @if (referencias().length === 0) {
+                <div class="empty-state-inline">
+                  <i class="pi pi-briefcase" aria-hidden="true"></i>
+                  <span>Nenhuma referência cadastrada.</span>
+                </div>
+              } @else {
+                <p-table [value]="referencias()" styleClass="p-datatable-sm">
+                  <ng-template pTemplate="header">
+                    <tr><th>Empresa</th><th>Contato</th><th>Telefone</th><th>Limite Informado</th><th style="width:60px"></th></tr>
+                  </ng-template>
+                  <ng-template pTemplate="body" let-r let-i="rowIndex">
+                    <tr>
+                      <td>{{ r.empresa }}</td>
+                      <td>{{ r.contato }}</td>
+                      <td>{{ r.telefone }}</td>
+                      <td>{{ r.limiteInformado | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</td>
+                      <td><button pButton type="button" icon="pi pi-trash" class="p-button-text p-button-sm p-button-danger" (click)="removerReferencia(i)" aria-label="Remover referência"></button></td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              }
+            </div>
+          </p-tabPanel>
+
+          <!-- Aba Mídias -->
+          <p-tabPanel header="Mídias">
+            <div class="form-section">
+              <h4 class="section-title">Documentos e Imagens</h4>
+              <p-fileUpload
+                mode="advanced"
+                [multiple]="true"
+                accept="image/*,.pdf"
+                [maxFileSize]="5000000"
+                chooseLabel="Selecionar arquivos"
+                uploadLabel="Enviar"
+                cancelLabel="Limpar"
+                (onSelect)="onArquivosSelecionados($event)"
+                [auto]="false">
+                <ng-template pTemplate="empty">
+                  <div class="empty-state-inline">
+                    <i class="pi pi-cloud-upload" aria-hidden="true"></i>
+                    <span>Arraste arquivos aqui ou clique em Selecionar.</span>
+                  </div>
+                </ng-template>
+              </p-fileUpload>
+            </div>
+          </p-tabPanel>
+
         </p-tabView>
 
         <!-- FOOTER FIXO -->
@@ -460,6 +580,15 @@ interface Contato {
     }
     .toast-error { background: #dc2626; }
 
+    .form-section { display: grid; gap: 1rem; padding: 0.5rem 0; }
+    .section-title { margin: 0; font-size: 0.8rem; font-weight: 900; text-transform: uppercase; color: var(--chb-text-muted, #6c757d); }
+    .info-muted { color: var(--chb-text-muted, #6c757d); font-size: 0.9rem; margin: 0; }
+    .form-row { display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-end; }
+    .form-field { display: grid; gap: 0.35rem; }
+    .socios-toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem; }
+    .empty-state-inline { display: flex; align-items: center; gap: 0.75rem; padding: 1.5rem; color: var(--chb-text-muted, #6c757d); background: var(--chb-surface-muted, #f8f9fa); border-radius: 0.4rem; }
+    .empty-state-inline i { font-size: 1.5rem; opacity: 0.6; }
+
     @media (max-width: 768px) {
       .grid-2, .grid-3 { grid-template-columns: 1fr; }
       .grid-span-2 { grid-column: span 1; }
@@ -485,6 +614,13 @@ export class ClientesFormPage implements OnInit, OnDestroy {
   readonly toastError = signal(false);
   readonly buscandoCep = signal(false);
   readonly contatos = signal<Contato[]>([]);
+  readonly socios = signal<{nome: string; cpf: string; participacao: number; tipo: string}[]>([]);
+  readonly referencias = signal<{empresa: string; contato: string; telefone: string; limiteInformado: number}[]>([]);
+  readonly _tipoPessoa = signal<string>('PF');
+
+  tipoPessoa(): string {
+    return this._tipoPessoa();
+  }
 
   dialogContatoVisible = false;
   novoContato: Contato = { data: '', assunto: '', responsavel: '' };
@@ -537,7 +673,10 @@ export class ClientesFormPage implements OnInit, OnDestroy {
     limiteCredito: [0],
     condicaoPagamento: ['avista'],
     vendedor: [''],
-    observacao: ['']
+    observacao: [''],
+    optanteSimplesNacional: [false],
+    aliquotaIss: [2.0],
+    deduzirConstrucaoCivil: [false]
   });
 
   ngOnInit(): void {
@@ -550,9 +689,10 @@ export class ClientesFormPage implements OnInit, OnDestroy {
       }
     });
 
-    this.form.get('tipo')?.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(() => {
+    this.form.get('tipo')?.valueChanges.pipe(takeUntil(this.destroy$)).subscribe((tipo) => {
       this.form.get('documento')?.setValue('');
       this.atualizarValidadorDocumento();
+      this._tipoPessoa.set(tipo ?? 'PF');
     });
 
     this.atualizarValidadorDocumento();
@@ -725,6 +865,40 @@ export class ClientesFormPage implements OnInit, OnDestroy {
     if (!this.novoContato.assunto) return;
     this.contatos.update(lista => [this.novoContato, ...lista]);
     this.dialogContatoVisible = false;
+  }
+
+  getCtrl(name: string): FormControl {
+    return this.form.get(name) as FormControl;
+  }
+
+  adicionarSocio(): void {
+    const nome = window.prompt('Nome do sócio:');
+    if (!nome) return;
+    const cpf = window.prompt('CPF:') ?? '';
+    const participacao = Number(window.prompt('% de participação:', '50') ?? 50);
+    const tipo = 'Sócio';
+    this.socios.update((s) => [...s, { nome, cpf, participacao, tipo }]);
+  }
+
+  removerSocio(i: number): void {
+    this.socios.update((s) => s.filter((_, idx) => idx !== i));
+  }
+
+  adicionarReferencia(): void {
+    const empresa = window.prompt('Empresa:');
+    if (!empresa) return;
+    const contato = window.prompt('Contato:') ?? '';
+    const telefone = window.prompt('Telefone:') ?? '';
+    const limiteInformado = Number(window.prompt('Limite informado (R$):', '0') ?? 0);
+    this.referencias.update((r) => [...r, { empresa, contato, telefone, limiteInformado }]);
+  }
+
+  removerReferencia(i: number): void {
+    this.referencias.update((r) => r.filter((_, idx) => idx !== i));
+  }
+
+  onArquivosSelecionados(_event: { files: File[] }): void {
+    // Demo: apenas mostra toast
   }
 
   toast(msg: string, error: boolean): void {
