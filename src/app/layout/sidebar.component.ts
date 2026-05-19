@@ -72,7 +72,9 @@ const navGroups: NavGroup[] = [
   {
     label: 'Compras',
     items: [
-      { label: 'Compras', route: '/compras', icon: 'pi pi-shopping-cart' }
+      { label: 'Pedidos', route: '/compras/pedidos-compra', icon: 'pi pi-shopping-cart' },
+      { label: 'Cotações', route: '/compras/cotacoes', icon: 'pi pi-search' },
+      { label: 'Notas de Entrada', route: '/compras/notas-entrada', icon: 'pi pi-file-import' }
     ]
   },
   {

@@ -150,13 +150,14 @@ export const routes: Routes = [
   { path: 'financeiro/inadimplencia', canActivate: [authGuard, storeGuard],
     loadComponent: () => import('./features/financeiro/inadimplencia.page').then(m => m.InadimplenciaPage) },
 
-  // Compras (placeholder mantido temporariamente)
-  {
-    path: 'compras',
-    canActivate: [authGuard, storeGuard],
-    loadComponent: () => import('./features/workspace/workspace.page').then((m) => m.WorkspacePage),
-    data: { config: workspaceConfigs['purchases'] }
-  },
+  // Compras
+  { path: 'compras', redirectTo: 'compras/pedidos-compra', pathMatch: 'full' },
+  { path: 'compras/pedidos-compra', canActivate: [authGuard, storeGuard],
+    loadComponent: () => import('./features/compras/pedidos-compra.page').then(m => m.PedidosCompraPage) },
+  { path: 'compras/cotacoes', canActivate: [authGuard, storeGuard],
+    loadComponent: () => import('./features/compras/cotacoes.page').then(m => m.CotacoesPage) },
+  { path: 'compras/notas-entrada', canActivate: [authGuard, storeGuard],
+    loadComponent: () => import('./features/compras/notas-entrada.page').then(m => m.NotasEntradaPage) },
 
   // Fiscal (placeholder mantido temporariamente)
   {
