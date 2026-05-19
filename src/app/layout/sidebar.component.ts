@@ -52,8 +52,13 @@ const navGroups: NavGroup[] = [
     items: [
       { label: 'Pre-vendas', route: '/vendas/pre-vendas', icon: 'pi pi-file-edit' },
       { label: 'PDV', route: '/vendas/pdv', icon: 'pi pi-calculator' },
-      { label: 'Caixa', route: '/caixa/operacoes', icon: 'pi pi-wallet' },
-      { label: 'Oficina', route: '/servicos/oficina', icon: 'pi pi-wrench' }
+      { label: 'Caixa', route: '/caixa/operacoes', icon: 'pi pi-wallet' }
+    ]
+  },
+  {
+    label: 'Serviços',
+    items: [
+      { label: 'Atendimento / OS', route: '/servicos/atendimento', icon: 'pi pi-wrench' }
     ]
   },
   {

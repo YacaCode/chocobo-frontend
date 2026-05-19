@@ -165,12 +165,14 @@ export const routes: Routes = [
     loadComponent: () => import('./features/workspace/workspace.page').then((m) => m.WorkspacePage),
     data: { config: workspaceConfigs['fiscal'] }
   },
-  {
-    path: 'servicos/oficina',
-    canActivate: [authGuard, storeGuard],
-    loadComponent: () => import('./features/workspace/workspace.page').then((m) => m.WorkspacePage),
-    data: { config: workspaceConfigs['services'] }
-  },
+  // Serviços / DAV-OS
+  { path: 'servicos/oficina', redirectTo: 'servicos/atendimento', pathMatch: 'full' },
+  { path: 'servicos/atendimento', canActivate: [authGuard, storeGuard],
+    loadComponent: () => import('./features/servicos/dav-os-list.page').then(m => m.DavOsListPage) },
+  { path: 'servicos/atendimento/nova', canActivate: [authGuard, storeGuard],
+    loadComponent: () => import('./features/servicos/dav-os-form.page').then(m => m.DavOsFormPage) },
+  { path: 'servicos/atendimento/:id', canActivate: [authGuard, storeGuard],
+    loadComponent: () => import('./features/servicos/dav-os-form.page').then(m => m.DavOsFormPage) },
   {
     path: 'health',
     loadComponent: () => import('./features/health/health.page').then((m) => m.HealthPage)
