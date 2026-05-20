@@ -22,3 +22,4 @@
 - Inclui dados demo e fallback amigavel para endpoints ainda indisponiveis.
 - Gera `openapi.yaml` local e cliente TypeScript Angular em `src/app/api/generated`.
 - Implementa importacao XML NF-e em `/compras/notas-entrada` com upload drag-drop, preview, mapeamento de produtos e lancamento no estoque.
+- Atualiza `/gerencial/dre` para consumir a DRE real do backend com hierarquia de plano de contas, filtros de periodo, indicadores e grafico ECharts.

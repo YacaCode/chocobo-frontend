@@ -3,8 +3,28 @@
 Commit inicial: 10397ff
 
 Ultima atualizacao: 2026-05-20
-Ultima tarefa: P-002 [FE] - Tela /compras/notas-entrada com import XML NF-e real
-Proxima tarefa pretendida: Q-001 [BE] - Integracao biblioteca fiscal + NfceService (bloqueada por certificado A1 real)
+Ultima tarefa: R-002 [FE] - DRE interativo com hierarquia real de plano de contas
+Proxima tarefa pretendida: S-001 [BE] - Schema comissao + job batch noturno
+
+## Bloco R - Gerencial Real (2026-05-20)
+
+Status: R-002 implementado. Commit: local.
+
+### R-002 [FE] DRE interativo com hierarquia real
+
+- `src/app/features/gerencial/dre.page.ts` atualizado para consumir `GET /api/v1/gerencial/dre`.
+- Filtro de periodo envia datas ISO completas (`inicio=YYYY-MM-DD&fim=YYYY-MM-DD`) compativeis com o backend.
+- Tabela DRE usa a hierarquia real de `linhas`, com expandir/recolher por conta gerencial.
+- Resumo mostra receita liquida, lucro bruto, EBITDA, lucro liquido e margens percentuais.
+- Grafico ECharts mostra a composicao do resultado do periodo.
+- Mantido fallback demo quando backend esta offline.
+- Botao "Exportar PDF" preservado com `window.print()`.
+
+### Validacao R-002
+
+- `npm run build`: verde em 2026-05-20 (warnings preexistentes de budget CSS em pre-venda-form e pdv).
+- `npm run test`: verde em 2026-05-20.
+- `npm run test:e2e`: verde em 2026-05-20 (7/7).
 
 ## Bloco P - Compras Real (2026-05-20)
 
