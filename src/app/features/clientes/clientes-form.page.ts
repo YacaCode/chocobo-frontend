@@ -9,7 +9,7 @@ import {
 import { AbstractControl, FormControl } from '@angular/forms';
 import { CurrencyPipe } from '@angular/common';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Subject, catchError, finalize, of, takeUntil } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
@@ -54,7 +54,7 @@ interface Contato {
   imports: [
     ButtonModule, CalendarModule, CheckboxModule, ConfirmDialogModule, CurrencyPipe,
     DialogModule, DropdownModule, FileUploadModule, FormsModule, InputNumberModule,
-    InputTextModule, InputTextareaModule, ReactiveFormsModule, TableModule, TabViewModule, TagModule
+    InputTextModule, InputTextareaModule, ReactiveFormsModule, RouterLink, TableModule, TabViewModule, TagModule
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -457,6 +457,163 @@ interface Contato {
             </div>
           </p-tabPanel>
 
+          <!-- Aba 9: Extrato -->
+          <p-tabPanel header="Extrato" (click)="carregarExtrato()">
+            <div class="form-section">
+              <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem;margin-bottom:1rem">
+                <h4 class="section-title" style="margin:0">Histórico do Cliente</h4>
+                <p-dropdown [options]="diasAtrasOpcoes" [(ngModel)]="diasAtras"
+                            optionLabel="label" optionValue="value"
+                            (onChange)="carregarExtrato()"
+                            styleClass="w-auto">
+                </p-dropdown>
+              </div>
+
+              @if (loadingExtrato()) {
+                <div style="display:flex;justify-content:center;padding:2rem">
+                  <i class="pi pi-spin pi-spinner" style="font-size:2rem"></i>
+                </div>
+              } @else if (extrato()) {
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:.75rem;margin-bottom:1.25rem">
+                  <div class="kpi-card">
+                    <i class="pi pi-shopping-cart"></i>
+                    <div>
+                      <span>Total Compras</span>
+                      <strong>{{ extrato()?.resumo?.totalCompras | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</strong>
+                    </div>
+                  </div>
+                  <div class="kpi-card">
+                    <i class="pi pi-wrench"></i>
+                    <div>
+                      <span>Total Serviços</span>
+                      <strong>{{ extrato()?.resumo?.totalServicos | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</strong>
+                    </div>
+                  </div>
+                  <div class="kpi-card">
+                    <i class="pi pi-chart-line"></i>
+                    <div>
+                      <span>Ticket Médio</span>
+                      <strong>{{ extrato()?.resumo?.ticketMedio | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</strong>
+                    </div>
+                  </div>
+                  <div class="kpi-card">
+                    <i class="pi pi-calendar"></i>
+                    <div>
+                      <span>Última Compra</span>
+                      <strong>{{ extrato()?.resumo?.ultimaCompra ?? '—' }}</strong>
+                    </div>
+                  </div>
+                </div>
+
+                <h4 class="section-title">Vendas</h4>
+                <p-table [value]="extrato()?.vendas ?? []" [rows]="10" [paginator]="true" styleClass="p-datatable-sm" class="mb-1">
+                  <ng-template pTemplate="header">
+                    <tr>
+                      <th>Data</th>
+                      <th>Documento</th>
+                      <th style="text-align:right">Valor</th>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="body" let-v>
+                    <tr>
+                      <td>{{ v.data }}</td>
+                      <td style="font-family:monospace">{{ v.documento }}</td>
+                      <td style="text-align:right">{{ v.valor | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</td>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="emptymessage">
+                    <tr><td colspan="3" style="text-align:center;padding:1rem;color:var(--chb-text-muted)">Sem vendas no período.</td></tr>
+                  </ng-template>
+                </p-table>
+
+                <h4 class="section-title" style="margin-top:1rem">Ordens de Serviço</h4>
+                <p-table [value]="extrato()?.ordens ?? []" [rows]="10" [paginator]="true" styleClass="p-datatable-sm">
+                  <ng-template pTemplate="header">
+                    <tr>
+                      <th>Data</th>
+                      <th>Número</th>
+                      <th>Placa</th>
+                      <th style="text-align:right">Valor Total</th>
+                      <th>Status</th>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="body" let-o>
+                    <tr>
+                      <td>{{ o.data }}</td>
+                      <td style="font-family:monospace;font-weight:700">{{ o.numero }}</td>
+                      <td style="font-family:monospace">{{ o.placa }}</td>
+                      <td style="text-align:right">{{ o.valorTotal | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</td>
+                      <td><p-tag [value]="o.status" severity="info"></p-tag></td>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="emptymessage">
+                    <tr><td colspan="5" style="text-align:center;padding:1rem;color:var(--chb-text-muted)">Sem ordens de serviço no período.</td></tr>
+                  </ng-template>
+                </p-table>
+              } @else {
+                <div style="text-align:center;padding:2rem;color:var(--chb-text-muted)">
+                  <i class="pi pi-chart-bar" style="font-size:2rem"></i>
+                  <p style="margin-top:.5rem">Clique na aba para carregar o extrato.</p>
+                </div>
+              }
+            </div>
+          </p-tabPanel>
+
+          <!-- Aba 10: Veículos -->
+          <p-tabPanel header="Veículos" (click)="carregarVeiculosCliente()">
+            <div class="form-section">
+              <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem;margin-bottom:.75rem">
+                <h4 class="section-title" style="margin:0">Veículos do Cliente</h4>
+                @if (!isNew()) {
+                  <a pButton icon="pi pi-plus" label="Novo Veículo" class="p-button-outlined p-button-sm"
+                     [routerLink]="['/veiculos/novo']" [queryParams]="{clienteId: clienteId()}"></a>
+                }
+              </div>
+
+              @if (loadingVeiculos()) {
+                <div style="display:flex;justify-content:center;padding:2rem">
+                  <i class="pi pi-spin pi-spinner" style="font-size:2rem"></i>
+                </div>
+              } @else {
+                <p-table [value]="veiculosCliente()" [rows]="10" [paginator]="true" styleClass="p-datatable-sm" [rowHover]="true">
+                  <ng-template pTemplate="header">
+                    <tr>
+                      <th>Placa</th>
+                      <th>Modelo</th>
+                      <th>Ano</th>
+                      <th>Cor</th>
+                      <th>RENAVAM</th>
+                      <th style="width:80px">Ações</th>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="body" let-v>
+                    <tr style="cursor:pointer" [routerLink]="['/veiculos', v.id]">
+                      <td style="font-family:monospace;font-weight:700;letter-spacing:.05em">{{ v.placa }}</td>
+                      <td>{{ v.modeloNome }}</td>
+                      <td>{{ v.ano }}</td>
+                      <td>{{ v.corNome }}</td>
+                      <td style="font-family:monospace">{{ v.renavam ?? '—' }}</td>
+                      <td>
+                        <button pButton icon="pi pi-pencil" class="p-button-text p-button-sm"
+                                [routerLink]="['/veiculos', v.id]"
+                                (click)="$event.stopPropagation()"
+                                pTooltip="Editar"></button>
+                      </td>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="emptymessage">
+                    <tr>
+                      <td colspan="6" style="text-align:center;padding:2rem;color:var(--chb-text-muted)">
+                        <i class="pi pi-car" style="font-size:2rem"></i>
+                        <p style="margin-top:.5rem">Nenhum veículo cadastrado.</p>
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              }
+            </div>
+          </p-tabPanel>
+
         </p-tabView>
 
         <!-- FOOTER FIXO -->
@@ -671,6 +828,19 @@ export class ClientesFormPage implements OnInit, OnDestroy {
   readonly socios = signal<{nome: string; cpf: string; participacao: number; tipo: string}[]>([]);
   readonly referencias = signal<{empresa: string; contato: string; telefone: string; limiteInformado: number}[]>([]);
   readonly _tipoPessoa = signal<string>('PF');
+  readonly extrato = signal<any>(null);
+  readonly loadingExtrato = signal(false);
+  readonly veiculosCliente = signal<any[]>([]);
+  readonly loadingVeiculos = signal(false);
+  diasAtras = 180;
+
+  readonly diasAtrasOpcoes = [
+    { label: '30 dias', value: 30 },
+    { label: '60 dias', value: 60 },
+    { label: '90 dias', value: 90 },
+    { label: '180 dias', value: 180 },
+    { label: '365 dias', value: 365 }
+  ];
 
   tipoPessoa(): string {
     return this._tipoPessoa();
@@ -967,5 +1137,35 @@ export class ClientesFormPage implements OnInit, OnDestroy {
     this.toastMsg.set(msg);
     this.toastError.set(error);
     setTimeout(() => this.toastMsg.set(''), 3500);
+  }
+
+  carregarExtrato(): void {
+    const id = this.clienteId();
+    if (!id || this.loadingExtrato()) return;
+    this.loadingExtrato.set(true);
+    this.http.get<any>(`/api/v1/cadastros/clientes/${id}/extrato?diasAtras=${this.diasAtras}`)
+      .pipe(
+        catchError(() => of({
+          resumo: { totalCompras: 0, totalServicos: 0, ticketMedio: 0, ultimaCompra: '—' },
+          vendas: [],
+          ordens: []
+        })),
+        finalize(() => this.loadingExtrato.set(false)),
+        takeUntil(this.destroy$)
+      )
+      .subscribe(data => this.extrato.set(data));
+  }
+
+  carregarVeiculosCliente(): void {
+    const id = this.clienteId();
+    if (!id || this.loadingVeiculos()) return;
+    this.loadingVeiculos.set(true);
+    this.http.get<any[]>(`/api/v1/veiculos?clienteId=${id}`)
+      .pipe(
+        catchError(() => of([])),
+        finalize(() => this.loadingVeiculos.set(false)),
+        takeUntil(this.destroy$)
+      )
+      .subscribe(data => this.veiculosCliente.set(data));
   }
 }
