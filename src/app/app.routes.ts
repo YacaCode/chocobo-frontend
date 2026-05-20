@@ -209,6 +209,13 @@ export const routes: Routes = [
   { path: 'cadastros/tipos-produto', canActivate: [authGuard, storeGuard], loadComponent: () => import('./features/auxiliares/tipos-produto.page').then((m) => m.TiposProdutoPage) },
   { path: 'cadastros/promocoes', canActivate: [authGuard, storeGuard], loadComponent: () => import('./features/auxiliares/promocoes.page').then((m) => m.PromocoesPage) },
 
+  // Veículos
+  { path: 'veiculos', canActivate: [authGuard, storeGuard], loadComponent: () => import('./features/veiculos/veiculos-list.page').then((m) => m.VeiculosListPage) },
+  { path: 'veiculos/novo', canActivate: [authGuard, storeGuard], loadComponent: () => import('./features/veiculos/veiculos-form.page').then((m) => m.VeiculosFormPage) },
+  { path: 'veiculos/:id', canActivate: [authGuard, storeGuard], loadComponent: () => import('./features/veiculos/veiculos-form.page').then((m) => m.VeiculosFormPage) },
+  { path: 'cadastros/cores-veiculo', canActivate: [authGuard, storeGuard], loadComponent: () => import('./features/auxiliares/cores-veiculo.page').then((m) => m.CoresVeiculoPage) },
+  { path: 'cadastros/modelos-veiculo', canActivate: [authGuard, storeGuard], loadComponent: () => import('./features/auxiliares/modelos-veiculo.page').then((m) => m.ModelosVeiculoPage) },
+
   // Gerencial
   { path: 'gerencial', redirectTo: 'gerencial/dre', pathMatch: 'full' },
   { path: 'gerencial/dre', canActivate: [authGuard, storeGuard],

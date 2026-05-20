@@ -67,6 +67,14 @@ const navGroups: NavGroup[] = [
     ]
   },
   {
+    label: 'Veículos',
+    items: [
+      { label: 'Veículos', route: '/veiculos', icon: 'pi pi-car' },
+      { label: 'Modelos', route: '/cadastros/modelos-veiculo', icon: 'pi pi-list' },
+      { label: 'Cores', route: '/cadastros/cores-veiculo', icon: 'pi pi-palette' }
+    ]
+  },
+  {
     label: 'Serviços',
     items: [
       { label: 'Atendimento / OS', route: '/servicos/atendimento', icon: 'pi pi-wrench' }
