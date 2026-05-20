@@ -37,7 +37,11 @@ const navGroups: NavGroup[] = [
       { label: 'Secoes', route: '/cadastros/secoes', icon: 'pi pi-sitemap' },
       { label: 'Unidades', route: '/cadastros/unidades', icon: 'pi pi-hashtag' },
       { label: 'NCM', route: '/cadastros/ncm', icon: 'pi pi-file-check' },
-      { label: 'Montadoras', route: '/cadastros/montadoras', icon: 'pi pi-car' }
+      { label: 'Montadoras', route: '/cadastros/montadoras', icon: 'pi pi-car' },
+      { label: 'Subseções', route: '/cadastros/subsecoes', icon: 'pi pi-minus-circle' },
+      { label: 'Grupos', route: '/cadastros/grupos-mercadoria', icon: 'pi pi-th-large' },
+      { label: 'Tipos', route: '/cadastros/tipos-produto', icon: 'pi pi-tag' },
+      { label: 'Promoções', route: '/cadastros/promocoes', icon: 'pi pi-percentage' }
     ]
   },
   {

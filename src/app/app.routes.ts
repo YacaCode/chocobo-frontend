@@ -204,6 +204,10 @@ export const routes: Routes = [
   { path: 'cadastros/unidades', canActivate: [authGuard, storeGuard], loadComponent: () => import('./features/auxiliares/unidades.page').then((m) => m.UnidadesPage) },
   { path: 'cadastros/ncm', canActivate: [authGuard, storeGuard], loadComponent: () => import('./features/auxiliares/ncm.page').then((m) => m.NcmPage) },
   { path: 'cadastros/montadoras', canActivate: [authGuard, storeGuard], loadComponent: () => import('./features/auxiliares/montadoras.page').then((m) => m.MontadorasPage) },
+  { path: 'cadastros/subsecoes', canActivate: [authGuard, storeGuard], loadComponent: () => import('./features/auxiliares/subsecoes.page').then((m) => m.SubsecoesPage) },
+  { path: 'cadastros/grupos-mercadoria', canActivate: [authGuard, storeGuard], loadComponent: () => import('./features/auxiliares/grupos-mercadoria.page').then((m) => m.GruposMercadoriaPage) },
+  { path: 'cadastros/tipos-produto', canActivate: [authGuard, storeGuard], loadComponent: () => import('./features/auxiliares/tipos-produto.page').then((m) => m.TiposProdutoPage) },
+  { path: 'cadastros/promocoes', canActivate: [authGuard, storeGuard], loadComponent: () => import('./features/auxiliares/promocoes.page').then((m) => m.PromocoesPage) },
 
   // Gerencial
   { path: 'gerencial', redirectTo: 'gerencial/dre', pathMatch: 'full' },
