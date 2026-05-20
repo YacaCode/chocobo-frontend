@@ -177,6 +177,10 @@ export const routes: Routes = [
     loadComponent: () => import('./features/servicos/dav-os-form.page').then(m => m.DavOsFormPage) },
   { path: 'servicos/atendimento/:id', canActivate: [authGuard, storeGuard],
     loadComponent: () => import('./features/servicos/dav-os-form.page').then(m => m.DavOsFormPage) },
+  { path: 'servicos/catalogo', canActivate: [authGuard, storeGuard],
+    loadComponent: () => import('./features/servicos/catalogo-servicos.page').then(m => m.CatalogoServicosPage) },
+  { path: 'servicos/oficinas', canActivate: [authGuard, storeGuard],
+    loadComponent: () => import('./features/auxiliares/oficinas.page').then(m => m.OficinasPage) },
   {
     path: 'health',
     loadComponent: () => import('./features/health/health.page').then((m) => m.HealthPage)
