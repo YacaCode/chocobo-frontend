@@ -181,6 +181,8 @@ export const routes: Routes = [
     loadComponent: () => import('./features/servicos/catalogo-servicos.page').then(m => m.CatalogoServicosPage) },
   { path: 'servicos/oficinas', canActivate: [authGuard, storeGuard],
     loadComponent: () => import('./features/auxiliares/oficinas.page').then(m => m.OficinasPage) },
+  { path: 'servicos/garantia', canActivate: [authGuard, storeGuard],
+    loadComponent: () => import('./features/servicos/garantia.page').then(m => m.GarantiaPage) },
   {
     path: 'health',
     loadComponent: () => import('./features/health/health.page').then((m) => m.HealthPage)
