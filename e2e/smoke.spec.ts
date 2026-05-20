@@ -119,6 +119,7 @@ test.describe('Smoke Tests — Fluxos Críticos', () => {
       await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({}) });
     });
 
+    await page.goto('/login');
     await page.evaluate(() => {
       localStorage.setItem('chb_token', 'demo-token-test');
       localStorage.setItem('chb_loja', JSON.stringify({ id: 1, nome: 'Loja Principal' }));
@@ -138,6 +139,7 @@ test.describe('Smoke Tests — Fluxos Críticos', () => {
       await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({}) });
     });
 
+    await page.goto('/login');
     await page.evaluate(() => {
       localStorage.setItem('chb_token', 'demo-token-test');
       localStorage.setItem('chb_loja', JSON.stringify({ id: 1, nome: 'Loja Principal' }));

@@ -2,6 +2,33 @@
 
 Commit inicial: 10397ff
 
+Ultima atualizacao: 2026-05-20
+Ultima tarefa: P-002 [FE] - Tela /compras/notas-entrada com import XML NF-e real
+Proxima tarefa pretendida: Q-001 [BE] - Integracao biblioteca fiscal + NfceService (bloqueada por certificado A1 real)
+
+## Bloco P - Compras Real (2026-05-20)
+
+Status: P-002 implementado. Commit: local.
+
+### P-002 [FE] /compras/notas-entrada com drag-drop XML real
+
+- `src/app/features/compras/notas-entrada.page.ts` atualizado para usar `p-fileUpload` em modo advanced com upload custom via `HttpClient`.
+- Upload envia multipart `file` para `POST /api/v1/compras/notas-entrada/importar-xml`.
+- Preview abre dialog "Importar NF-e" com fornecedor, numero/serie, emissao, total, chave de acesso e itens.
+- Grid de itens mostra codigo NF, descricao, NCM, CFOP, quantidade, valores e coluna Produto Chocobo.
+- Integrado `ProdutoBuscaDialogComponent` para vincular produto por item.
+- Botao "Confirmar Entrada" fica bloqueado ate todos os itens estarem vinculados.
+- Confirmacao envia payload para `POST /api/v1/compras/notas-entrada`.
+- Lancamento usa `POST /api/v1/compras/notas-entrada/{id}/lancar-estoque`.
+- Mantido fallback demo quando backend esta offline.
+- Corrigido `e2e/smoke.spec.ts` para inicializar localStorage somente apos navegar para uma origem valida.
+
+### Validacao P-002
+
+- `npm run build`: verde em 2026-05-20 (warnings preexistentes de budget CSS em pre-venda-form e pdv).
+- `npm run test`: verde em 2026-05-20.
+- `npm run test:e2e`: verde em 2026-05-20 (7/7).
+
 ## F0-002 [FE] Inicializar repo chocobo-frontend
 
 Status: implementado localmente.
