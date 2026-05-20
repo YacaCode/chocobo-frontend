@@ -155,6 +155,8 @@ export const routes: Routes = [
     loadComponent: () => import('./features/financeiro/contas-pagar.page').then(m => m.ContasPagarPage) },
   { path: 'financeiro/inadimplencia', canActivate: [authGuard, storeGuard],
     loadComponent: () => import('./features/financeiro/inadimplencia.page').then(m => m.InadimplenciaPage) },
+  { path: 'financeiro/configuracao', canActivate: [authGuard, storeGuard],
+    loadComponent: () => import('./features/financeiro/configuracao-financeira.page').then(m => m.ConfiguracaoFinanceiraPage) },
 
   // Compras
   { path: 'compras', redirectTo: 'compras/pedidos-compra', pathMatch: 'full' },

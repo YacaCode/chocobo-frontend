@@ -88,7 +88,8 @@ const navGroups: NavGroup[] = [
     items: [
       { label: 'Contas a Receber', route: '/financeiro/contas-receber', icon: 'pi pi-arrow-down-right' },
       { label: 'Contas a Pagar', route: '/financeiro/contas-pagar', icon: 'pi pi-arrow-up-right' },
-      { label: 'Inadimplência', route: '/financeiro/inadimplencia', icon: 'pi pi-exclamation-circle' }
+      { label: 'Inadimplência', route: '/financeiro/inadimplencia', icon: 'pi pi-exclamation-circle' },
+      { label: 'Configuração', route: '/financeiro/configuracao', icon: 'pi pi-cog' }
     ]
   },
   {
