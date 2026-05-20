@@ -26,6 +26,8 @@ import { ToastModule } from 'primeng/toast';
 import { ProdutoBuscaDialogComponent } from '../../shared/produto-busca-dialog/produto-busca-dialog.component';
 import type { ProdutoItem } from '../../shared/produto-busca-dialog/produto-busca-dialog.component';
 import { ClienteBuscaDialogComponent } from '../../shared/cliente-busca-dialog/cliente-busca-dialog.component';
+import { ServicoBuscaDialogComponent } from '../../shared/servico-busca-dialog/servico-busca-dialog.component';
+import type { ServicoItem } from '../../shared/servico-busca-dialog/servico-busca-dialog.component';
 
 const DEMO_OS = {
   id: 'os-001', numero: 'OS-0001', clienteId: null, clienteNome: '',
@@ -41,7 +43,7 @@ const DEMO_OS = {
   imports: [
     ButtonModule, ClienteBuscaDialogComponent, ConfirmDialogModule, CurrencyPipe,
     DropdownModule, FormsModule, InputNumberModule, InputTextModule,
-    ProdutoBuscaDialogComponent, SkeletonModule, TabViewModule, TagModule, ToastModule
+    ProdutoBuscaDialogComponent, ServicoBuscaDialogComponent, SkeletonModule, TabViewModule, TagModule, ToastModule
   ],
   providers: [MessageService, ConfirmationService],
   template: `
@@ -49,6 +51,7 @@ const DEMO_OS = {
     <p-confirmDialog></p-confirmDialog>
     <chb-produto-busca-dialog [(visible)]="showProdutoDialog" (produtoSelecionado)="onProdutoSelecionado($event)"></chb-produto-busca-dialog>
     <chb-cliente-busca-dialog [(visible)]="showClienteDialog" (clienteSelecionado)="onClienteSelecionado($event)"></chb-cliente-busca-dialog>
+    <chb-servico-busca-dialog [(visible)]="showServicoBuscaDialog" (servicoSelecionado)="onServicoCatalogSelecionado($event)"></chb-servico-busca-dialog>
 
     @if (loading()) {
       <div style="padding:2rem;text-align:center">
@@ -84,19 +87,28 @@ const DEMO_OS = {
           <!-- Veículo -->
           <div class="os-field">
             <label class="os-field-label">Placa</label>
-            <input pInputText [(ngModel)]="placaEdit" placeholder="ABC-1234" style="text-transform:uppercase" />
+            <div class="input-btn-group">
+              <input pInputText [(ngModel)]="placaEdit" placeholder="ABC-1234"
+                     style="text-transform:uppercase;font-family:monospace;flex:1" />
+              <button pButton icon="pi pi-search" class="p-button-outlined p-button-sm"
+                      [loading]="buscandoVeiculo()"
+                      (click)="buscarVeiculoPorPlaca()" pTooltip="Buscar veículo"></button>
+            </div>
           </div>
           <div class="os-field">
             <label class="os-field-label">Modelo / Marca</label>
-            <input pInputText [(ngModel)]="modeloEdit" placeholder="Honda CG 160" />
+            <input pInputText [(ngModel)]="modeloEdit" placeholder="Honda CG 160" [readonly]="!!veiculoId()" />
           </div>
           <div class="os-field">
             <label class="os-field-label">Quilometragem</label>
             <input pInputText [(ngModel)]="quilometragemEdit" placeholder="12.500" />
           </div>
           <div class="os-field">
-            <label class="os-field-label">Cor</label>
-            <input pInputText [(ngModel)]="corEdit" placeholder="Vermelha" />
+            <label class="os-field-label">Consultor</label>
+            <p-dropdown [(ngModel)]="consultorEdit"
+                        [options]="consultores()"
+                        optionLabel="label" optionValue="value"
+                        placeholder="Selecione..." styleClass="w-full"></p-dropdown>
           </div>
         </div>
 
@@ -166,29 +178,36 @@ const DEMO_OS = {
           <p-tabPanel header="Serviços">
             <div class="tab-toolbar">
               <span style="font-size:.85rem;color:var(--chb-text-muted)">{{ servicos().length }} serviço(s)</span>
-              <button pButton icon="pi pi-plus" label="Adicionar Serviço"
-                      class="p-button-outlined p-button-sm"
-                      (click)="adicionarServico()"></button>
+              <div style="display:flex;gap:.5rem">
+                <button pButton icon="pi pi-list" label="Buscar Catálogo (F2)"
+                        class="p-button-outlined p-button-sm"
+                        (click)="abrirBuscaServico()"></button>
+                <button pButton icon="pi pi-plus" label="Serviço Manual"
+                        class="p-button-outlined p-button-sm"
+                        (click)="adicionarServico()"></button>
+              </div>
             </div>
             @if (servicos().length === 0) {
               <div class="empty-items">
                 <i class="pi pi-wrench"></i>
-                <span>Nenhum serviço adicionado.</span>
+                <span>Nenhum serviço adicionado. Pressione F2 ou clique em Buscar Catálogo.</span>
               </div>
             } @else {
               <table class="items-table">
                 <thead>
                   <tr>
+                    <th style="width:90px">Código</th>
                     <th>Descrição do Serviço</th>
                     <th style="width:100px;text-align:center">Tempo (h)</th>
                     <th style="width:120px;text-align:right">Preço</th>
-                    <th style="width:100px">Mecânico</th>
+                    <th style="width:130px">Mecânico</th>
                     <th style="width:40px"></th>
                   </tr>
                 </thead>
                 <tbody>
                   @for (item of servicos(); track item.id; let i = $index) {
                     <tr>
+                      <td class="cell-mono">{{ item.codigo }}</td>
                       <td><input pInputText [(ngModel)]="item.descricao" placeholder="Descreva o serviço" style="width:100%" /></td>
                       <td style="text-align:center">
                         <p-inputNumber [(ngModel)]="item.quantidade"
@@ -204,7 +223,13 @@ const DEMO_OS = {
                                        (onInput)="recalcular()">
                         </p-inputNumber>
                       </td>
-                      <td><input pInputText [(ngModel)]="item.mecanico" placeholder="—" style="width:90px" /></td>
+                      <td>
+                        <p-dropdown [(ngModel)]="item.mecanico"
+                                    [options]="mecanicos()"
+                                    optionLabel="label" optionValue="value"
+                                    placeholder="—" styleClass="w-full"
+                                    [style]="{width:'120px'}"></p-dropdown>
+                      </td>
                       <td>
                         <button pButton icon="pi pi-trash" class="p-button-text p-button-danger p-button-sm"
                                 (click)="removerItem(i, 'SERVICO')" pTooltip="Remover"></button>
@@ -309,6 +334,7 @@ export class DavOsFormPage implements OnInit, OnDestroy {
 
   showProdutoDialog = false;
   showClienteDialog = false;
+  showServicoBuscaDialog = false;
   private tipoProduto: 'PECA' | 'SERVICO' = 'PECA';
 
   // Campos editáveis locais
@@ -317,6 +343,12 @@ export class DavOsFormPage implements OnInit, OnDestroy {
   quilometragemEdit = '';
   corEdit = '';
   queixaEdit = '';
+  consultorEdit = '';
+
+  readonly buscandoVeiculo = signal(false);
+  readonly veiculoId = signal<string | null>(null);
+  readonly consultores = signal<{label: string; value: string}[]>([]);
+  readonly mecanicos = signal<{label: string; value: string}[]>([]);
 
   readonly pecas = computed(() => (this.os().itens ?? []).filter((i: any) => i.tipo === 'PECA'));
   readonly servicos = computed(() => (this.os().itens ?? []).filter((i: any) => i.tipo === 'SERVICO'));
@@ -337,6 +369,7 @@ export class DavOsFormPage implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.carregarPessoas();
     this.route.paramMap.pipe(takeUntil(this.destroy$)).subscribe(params => {
       const id = params.get('id');
       if (id && id !== 'nova') {
@@ -356,11 +389,57 @@ export class DavOsFormPage implements OnInit, OnDestroy {
   @HostListener('document:keydown.f1', ['$event'])
   onF1(e: KeyboardEvent): void { e.preventDefault(); this.abrirBuscaProduto('PECA'); }
 
+  @HostListener('document:keydown.f2', ['$event'])
+  onF2(e: KeyboardEvent): void { e.preventDefault(); this.abrirBuscaServico(); }
+
   @HostListener('document:keydown.f4', ['$event'])
   onF4(e: KeyboardEvent): void { e.preventDefault(); this.showClienteDialog = true; }
 
   @HostListener('document:keydown.f8', ['$event'])
   onF8(e: KeyboardEvent): void { e.preventDefault(); if (this.os().status === 'ABERTA') this.gerarOrcamento(); }
+
+  carregarPessoas(): void {
+    const demo = (items: string[]) => items.map(n => ({ label: n, value: n }));
+    this.http.get<any[]>('/api/v1/pessoas/consultores').pipe(catchError(() => of(null)), takeUntil(this.destroy$))
+      .subscribe(data => this.consultores.set(data?.map((p: any) => ({ label: p.nome ?? p.razaoSocial ?? String(p), value: p.nome ?? String(p) })) ?? demo(['Ana Consultora', 'João Consultor'])));
+    this.http.get<any[]>('/api/v1/pessoas/mecanicos').pipe(catchError(() => of(null)), takeUntil(this.destroy$))
+      .subscribe(data => this.mecanicos.set(data?.map((p: any) => ({ label: p.nome ?? p.razaoSocial ?? String(p), value: p.nome ?? String(p) })) ?? demo(['Carlos Mecânico', 'Pedro Mecânico', 'João Elétrico'])));
+  }
+
+  buscarVeiculoPorPlaca(): void {
+    const placa = this.placaEdit.trim();
+    if (!placa) return;
+    this.buscandoVeiculo.set(true);
+    this.http.get<any[]>(`/api/v1/veiculos/busca?q=${encodeURIComponent(placa)}`)
+      .pipe(catchError(() => of(null)), finalize(() => this.buscandoVeiculo.set(false)), takeUntil(this.destroy$))
+      .subscribe(data => {
+        const v = Array.isArray(data) ? data[0] : data;
+        if (v) {
+          this.veiculoId.set(v.id ?? null);
+          this.modeloEdit = `${v.modeloNome ?? v.modelo ?? ''} ${v.montadora ?? ''}`.trim();
+          this.corEdit = v.corNome ?? v.cor ?? '';
+          this.msg.add({ severity: 'success', summary: 'Veículo encontrado', detail: `${v.placa} — ${this.modeloEdit}` });
+        } else {
+          this.msg.add({ severity: 'warn', summary: 'Não encontrado', detail: `Nenhum veículo com placa "${placa}".` });
+        }
+      });
+  }
+
+  abrirBuscaServico(): void { this.showServicoBuscaDialog = true; }
+
+  onServicoCatalogSelecionado(sv: ServicoItem): void {
+    const novoItem = {
+      id: 'svc-' + Date.now(),
+      tipo: 'SERVICO',
+      codigo: sv.codigo,
+      descricao: sv.nome,
+      quantidade: sv.tempoPrevisto ?? 1,
+      precoUnitario: sv.preco,
+      mecanico: ''
+    };
+    this.os.update(os => ({ ...os, itens: [...(os.itens ?? []), novoItem] }));
+    this.showServicoBuscaDialog = false;
+  }
 
   carregarOs(id: string): void {
     this.loading.set(true);
@@ -444,6 +523,8 @@ export class DavOsFormPage implements OnInit, OnDestroy {
       quilometragem: this.quilometragemEdit,
       cor: this.corEdit,
       queixa: this.queixaEdit,
+      consultor: this.consultorEdit,
+      veiculoId: this.veiculoId(),
       itens: osAtual.itens
     };
 
